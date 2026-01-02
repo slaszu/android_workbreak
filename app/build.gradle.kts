@@ -32,13 +32,6 @@ android {
     buildFeatures {
         compose = true
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
 }
 
 kotlin {
@@ -65,6 +58,8 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    implementation(libs.kotlinx.datetime)
 
     implementation(project(":notification"))
     implementation(project(":schedule"))
