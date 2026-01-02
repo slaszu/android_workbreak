@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">WorkBreak</string>
+    <string name="title_notification">Notification Module</string>
+    <string name="title_activity_notification_rational">NotificationRationalActivity</string>
+    <string name="title_activity_notification_request">NotificationRequestActivity</string>
+    <string name="title_activity_schedule_request">ScheduleRequestActivity</string>
+</resources>
