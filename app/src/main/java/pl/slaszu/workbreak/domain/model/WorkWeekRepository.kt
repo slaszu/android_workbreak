@@ -1,6 +1,8 @@
 package pl.slaszu.workbreak.domain.model
 
+import kotlinx.coroutines.flow.Flow
+
 interface WorkWeekRepository {
-    suspend fun get(): WorkWeek
+    fun get(): Flow<WorkWeek>
     suspend fun persist(workWeek: WorkWeek)
 }

@@ -5,17 +5,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import pl.slaszu.workbreak.domain.NotificationService
 import pl.slaszu.workbreak.domain.ScheduleService
+import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
+import pl.slaszu.workbreak.ui.viewmodel.WorkWeekViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -48,10 +53,18 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+
+            val viewModel by viewModels<WorkWeekViewModel>()
+
+            val workWeek = viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek()).value
+
             WorkBreakTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Has notification permission: ${notificationService.hasPermission()}\nHas schedule permission: ${scheduleService.hasPermission()}",
+                    WeekConfiguration(
+                        workWeek = workWeek,
+                        onSave = {
+                            viewModel.save(it)
+                        },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -61,17 +74,21 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun WeekConfiguration(
+    workWeek: WorkWeek,
+    onSave: (WorkWeek) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Column(
         modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WorkBreakTheme {
-        Greeting("Android")
+    ) {
+        Text("$workWeek")
+        Button(
+            onClick = {
+                onSave(workWeek)
+            }
+        ) {
+            Text(text = "save")
+        }
     }
 }

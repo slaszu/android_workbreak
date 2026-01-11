@@ -1,6 +1,6 @@
 package pl.slaszu.workbreak.infrastructure.storage
 
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.Flow
 import pl.slaszu.localstorage.LocalStorage
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.model.WorkWeekRepository
@@ -8,8 +8,8 @@ import pl.slaszu.workbreak.domain.model.WorkWeekRepository
 class LocalStorageWorkWeekRepository(
     private val localStorage: LocalStorage<WorkWeek>
 ) : WorkWeekRepository {
-    override suspend fun get(): WorkWeek {
-        return localStorage.get().first()
+    override fun get(): Flow<WorkWeek> {
+        return localStorage.get()
     }
 
     override suspend fun persist(workWeek: WorkWeek) {
