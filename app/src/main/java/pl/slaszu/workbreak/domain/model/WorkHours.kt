@@ -8,4 +8,15 @@ data class WorkHours(
     val startMinute: Int,
     val endHour: Int,
     val endMinute: Int,
-)
+) {
+    companion object {
+        fun create(): WorkHours {
+            return WorkHours(
+                startHour = 8,
+                startMinute = 0,
+                endHour = 16,
+                endMinute = 0,
+            )
+        }
+    }
+}

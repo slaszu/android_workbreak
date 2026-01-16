@@ -9,4 +9,17 @@ data class WorkDay(
     val workHours: WorkHours,
     val breakEveryXMinutes: Int,
     val breakDurationMinutes: Int,
-)
+    val active: Boolean = false,
+) {
+
+    companion object {
+        fun create(dayOfWeek: DayOfWeek): WorkDay {
+            return WorkDay(
+                dayOfWeek = dayOfWeek,
+                workHours = WorkHours.create(),
+                breakEveryXMinutes = 45,
+                breakDurationMinutes = 15,
+            )
+        }
+    }
+}

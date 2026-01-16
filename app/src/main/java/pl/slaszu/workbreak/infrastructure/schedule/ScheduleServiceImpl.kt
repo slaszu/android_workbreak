@@ -2,7 +2,7 @@ package pl.slaszu.workbreak.infrastructure.schedule
 
 import androidx.activity.ComponentActivity
 import pl.slaszu.schedule.Schedule
-import pl.slaszu.workbreak.domain.ScheduleService
+import pl.slaszu.workbreak.domain.schedule.ScheduleService
 
 class ScheduleServiceImpl(
     private val schedule: Schedule

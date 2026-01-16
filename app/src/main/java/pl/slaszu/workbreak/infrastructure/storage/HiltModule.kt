@@ -20,7 +20,7 @@ object Providers {
     ): WorkWeekRepository {
         return LocalStorageWorkWeekRepository(
             localStorage = context.createLocalStorage(
-                default = WorkWeek(),
+                default = WorkWeek.create(),
                 filename = "workWeek"
             )
         )

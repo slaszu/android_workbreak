@@ -6,11 +6,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.datetime.DayOfWeek
-import pl.slaszu.workbreak.domain.model.WorkDay
-import pl.slaszu.workbreak.domain.model.WorkHours
+import pl.slaszu.workbreak.application.SetWorkDayActivity
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.model.WorkWeekRepository
-import kotlin.random.Random
 
 @HiltViewModel
 class WorkWeekViewModel @Inject constructor(
@@ -19,21 +17,12 @@ class WorkWeekViewModel @Inject constructor(
     // Expose screen UI state
     val workWeekFlow = this.WorkWeekRepository.get()
 
-    fun save(workWeek: WorkWeek) {
+    fun setWorkDayActive(workWeek: WorkWeek, dayOfWeek: DayOfWeek, active: Boolean) {
+        val newWorkWeek = SetWorkDayActivity().setWorkDay(workWeek, dayOfWeek, active)
         viewModelScope.launch {
             WorkWeekRepository.persist(
-                workWeek.copy(
-                    workDays = listOf(
-                        WorkDay(
-                            dayOfWeek = DayOfWeek.MONDAY,
-                            workHours = WorkHours(8, 0, 16, 0),
-                            breakEveryXMinutes = Random.nextInt(10, 55),
-                            breakDurationMinutes = Random.nextInt(1, 5)
-                        )
-                    )
-                )
+                newWorkWeek
             )
         }
-
     }
 }

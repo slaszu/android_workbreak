@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import pl.slaszu.workbreak.domain.ScheduleService
+import pl.slaszu.workbreak.domain.schedule.ScheduleService
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 import javax.inject.Inject
 

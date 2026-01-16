@@ -2,7 +2,7 @@ package pl.slaszu.workbreak
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import pl.slaszu.workbreak.domain.NotificationService
+import pl.slaszu.workbreak.domain.notification.NotificationService
 import javax.inject.Inject
 
 @HiltAndroidApp

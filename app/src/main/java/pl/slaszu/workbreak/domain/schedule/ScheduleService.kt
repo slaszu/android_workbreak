@@ -1,4 +1,4 @@
-package pl.slaszu.workbreak.domain
+package pl.slaszu.workbreak.domain.schedule
 
 import androidx.activity.ComponentActivity
 

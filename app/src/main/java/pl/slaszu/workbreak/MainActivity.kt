@@ -6,19 +6,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import pl.slaszu.workbreak.domain.NotificationService
-import pl.slaszu.workbreak.domain.ScheduleService
+import kotlinx.datetime.DayOfWeek
+import pl.slaszu.workbreak.domain.Days
+import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.notification.NotificationService
+import pl.slaszu.workbreak.domain.schedule.ScheduleService
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 import pl.slaszu.workbreak.ui.viewmodel.WorkWeekViewModel
 import javax.inject.Inject
@@ -56,14 +62,16 @@ class MainActivity : ComponentActivity() {
 
             val viewModel by viewModels<WorkWeekViewModel>()
 
-            val workWeek = viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek()).value
+            val workWeek =
+                viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek.create()).value
 
             WorkBreakTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    Text("$workWeek", modifier = Modifier.padding(innerPadding))
                     WeekConfiguration(
                         workWeek = workWeek,
-                        onSave = {
-                            viewModel.save(it)
+                        onActivityChange = { workWeek, dayOfWeek, active ->
+                            viewModel.setWorkDayActive(workWeek, dayOfWeek, active)
                         },
                         modifier = Modifier.padding(innerPadding)
                     )
@@ -74,21 +82,39 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WeekConfiguration(
+private fun WeekConfiguration(
     workWeek: WorkWeek,
-    onSave: (WorkWeek) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onActivityChange: (WorkWeek, DayOfWeek, Boolean) -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = modifier
     ) {
-        Text("$workWeek")
-        Button(
-            onClick = {
-                onSave(workWeek)
-            }
-        ) {
-            Text(text = "save")
+        items(items = Days.entries) {
+            DayItem(
+                day = it,
+                workDay = workWeek.getWorkDay(it.dayOfWeek),
+                onCheckedChange = { checked ->
+                    onActivityChange(workWeek, it.dayOfWeek, checked)
+                }
+            )
         }
     }
 }
+
+@Composable
+private fun DayItem(
+    day: Days,
+    workDay: WorkDay,
+    onCheckedChange: (Boolean) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Row {
+        Checkbox(
+            checked = workDay.active,
+            onCheckedChange = onCheckedChange
+        )
+        Text(stringResource(day.dayTranslationKey))
+    }
+}
+

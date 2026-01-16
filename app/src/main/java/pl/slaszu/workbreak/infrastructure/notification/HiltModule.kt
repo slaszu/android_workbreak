@@ -8,7 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import pl.slaszu.notification.Configuration
 import pl.slaszu.notification.Notification
-import pl.slaszu.workbreak.domain.NotificationService
+import pl.slaszu.workbreak.domain.notification.NotificationService
 
 @InstallIn(SingletonComponent::class)
 @Module

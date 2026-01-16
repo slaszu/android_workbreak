@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
-import pl.slaszu.workbreak.domain.NotificationService
+import pl.slaszu.workbreak.domain.notification.NotificationService
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 import javax.inject.Inject
 

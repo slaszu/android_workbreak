@@ -7,7 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import pl.slaszu.schedule.Schedule
-import pl.slaszu.workbreak.domain.ScheduleService
+import pl.slaszu.workbreak.domain.schedule.ScheduleService
 
 @InstallIn(SingletonComponent::class)
 @Module

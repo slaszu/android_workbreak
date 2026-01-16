@@ -1,4 +1,4 @@
-package pl.slaszu.workbreak.domain
+package pl.slaszu.workbreak.domain.notification
 
 import androidx.activity.ComponentActivity
 

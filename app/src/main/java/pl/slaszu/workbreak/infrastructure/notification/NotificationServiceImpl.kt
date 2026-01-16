@@ -2,7 +2,7 @@ package pl.slaszu.workbreak.infrastructure.notification
 
 import androidx.activity.ComponentActivity
 import pl.slaszu.notification.Notification
-import pl.slaszu.workbreak.domain.NotificationService
+import pl.slaszu.workbreak.domain.notification.NotificationService
 
 class NotificationServiceImpl(
     private val notification: Notification
