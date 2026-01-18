@@ -10,5 +10,12 @@ enum class Days(val dayTranslationKey: Int, val dayOfWeek: DayOfWeek) {
     THURSDAY(R.string.thursday, DayOfWeek.THURSDAY),
     FRIDAY(R.string.friday, DayOfWeek.FRIDAY),
     SATURDAY(R.string.saturday, DayOfWeek.SATURDAY),
-    SUNDAY(R.string.sunday, DayOfWeek.SUNDAY)
+    SUNDAY(R.string.sunday, DayOfWeek.SUNDAY);
+
+    companion object {
+        fun getForDayOfWeek(dayOfWeek: DayOfWeek): Days {
+            return entries.first { it.dayOfWeek == dayOfWeek }
+        }
+    }
+
 }

@@ -61,6 +61,8 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.navigation.compose)
+
 
     implementation(project(":notification"))
     implementation(project(":schedule"))
