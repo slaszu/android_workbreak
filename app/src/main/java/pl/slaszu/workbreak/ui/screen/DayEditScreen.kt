@@ -30,28 +30,35 @@ import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
+private data class TimePickerContainer(
+    val initialHour: Int,
+    val initialMinute: Int,
+    val onConfirm: (Int, Int) -> Unit
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DayEditComposable(
-    workDay: WorkDay,
-    onSave: (WorkDay) -> Unit = {}
+private fun TimePickerDialogConfigurable(
+    timePickerContainer: TimePickerContainer?,
+    show: Boolean,
+    onDismiss: () -> Unit
 ) {
+    if (timePickerContainer == null) return
 
     val timePickerState = rememberTimePickerState(
-        initialHour = workDay.workHours.startHour,
-        initialMinute = workDay.workHours.startMinute,
+        initialHour = timePickerContainer.initialHour,
+        initialMinute = timePickerContainer.initialMinute,
         is24Hour = true,
     )
 
-    var chooseTimeDialog by remember { mutableStateOf(false) }
-    if (chooseTimeDialog) {
+
+    if (show) {
         TimePickerDialog(
-            onDismiss = {
-                chooseTimeDialog = false
-            },
+            onDismiss = onDismiss,
             onConfirm = {
-                Log.d("myapp", "${timePickerState.minute}-${timePickerState.hour}")
-                chooseTimeDialog = false
+                Log.d("myapp", "${timePickerState.hour}-${timePickerState.minute}")
+                timePickerContainer.onConfirm(timePickerState.hour, timePickerState.minute)
+                onDismiss()
             }
         ) {
             TimePicker(
@@ -59,19 +66,79 @@ fun DayEditComposable(
             )
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DayEditComposable(
+    workDay: WorkDay,
+    onSave: (WorkDay) -> Unit = {}
+) {
+
+    var timePickerShow by remember { mutableStateOf(false) }
+    var timePickerContainer by remember { mutableStateOf<TimePickerContainer?>(null) }
+
+    TimePickerDialogConfigurable(
+        timePickerContainer = timePickerContainer,
+        show = timePickerShow,
+        onDismiss = {
+            timePickerShow = false
+            timePickerContainer = null
+        }
+    )
 
     Column(modifier = Modifier.padding(10.dp)) {
 
         Text(stringResource(Days.getForDayOfWeek(workDay.dayOfWeek).dayTranslationKey))
 
         ParamInfo(
-            header = "Work hours",
+            header = "Start hour",
             desc = "Description form work hours"
         ) {
-            Text("${workDay.workHours.startHour} - ${workDay.workHours.endHour}")
+            Text("${workDay.workHours.startHour}:${workDay.workHours.startMinute}")
             Button(
                 onClick = {
-                    chooseTimeDialog = true
+                    timePickerContainer = TimePickerContainer(
+                        initialHour = workDay.workHours.startHour,
+                        initialMinute = workDay.workHours.startMinute
+                    ) { hour, minute ->
+                        onSave(
+                            workDay.copy(
+                                workHours = workDay.workHours.copy(
+                                    startHour = hour,
+                                    startMinute = minute
+                                )
+                            )
+                        )
+                    }
+                    timePickerShow = true
+                }
+            ) {
+                Text("Edit")
+            }
+        }
+
+        ParamInfo(
+            header = "End hour",
+            desc = "Description form work hours"
+        ) {
+            Text("${workDay.workHours.endHour}:${workDay.workHours.endMinute}")
+            Button(
+                onClick = {
+                    timePickerContainer = TimePickerContainer(
+                        initialHour = workDay.workHours.endHour,
+                        initialMinute = workDay.workHours.endMinute
+                    ) { hour, minute ->
+                        onSave(
+                            workDay.copy(
+                                workHours = workDay.workHours.copy(
+                                    endHour = hour,
+                                    endMinute = minute
+                                )
+                            )
+                        )
+                    }
+                    timePickerShow = true
                 }
             ) {
                 Text("Edit")
