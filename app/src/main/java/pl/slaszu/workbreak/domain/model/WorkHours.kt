@@ -9,6 +9,11 @@ data class WorkHours(
     val endHour: Int,
     val endMinute: Int,
 ) {
+    val startTime: String
+        get() = "$startHour:${startMinute.toString().padStart(2, '0')}"
+    val endTime: String
+        get() = "$endHour:${endMinute.toString().padStart(2, '0')}"
+
     companion object {
         fun create(): WorkHours {
             return WorkHours(

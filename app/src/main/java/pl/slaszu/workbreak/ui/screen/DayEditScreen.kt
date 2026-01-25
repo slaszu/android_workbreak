@@ -1,7 +1,9 @@
 package pl.slaszu.workbreak.ui.screen
 
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,11 +14,19 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.then
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -30,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -103,15 +115,19 @@ fun DayEditComposable(
     )
 
     Column(modifier = Modifier.padding(10.dp)) {
+        val dayName = stringResource(Days.getForDayOfWeek(workDay.dayOfWeek).dayTranslationKey)
 
-        Text(stringResource(Days.getForDayOfWeek(workDay.dayOfWeek).dayTranslationKey))
+        Text(dayName)
 
         ParamInfo(
-            header = "Start hour",
-            desc = "Description form work hours"
+            header = "Work start time",
+            desc = "Time when you start work in $dayName"
         ) {
-            Text("${workDay.workHours.startHour}:${workDay.workHours.startMinute}")
-            Button(
+            TextButton(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                shape = OutlinedTextFieldDefaults.shape,
+                contentPadding = OutlinedTextFieldDefaults.contentPadding(),
+                modifier = Modifier.weight(0.3f),
                 onClick = {
                     timePickerContainer = TimePickerContainer(
                         initialHour = workDay.workHours.startHour,
@@ -129,16 +145,20 @@ fun DayEditComposable(
                     timePickerShow = true
                 }
             ) {
-                Text("Edit")
+                Text(workDay.workHours.startTime)
+                Icon(Icons.Filled.Schedule, contentDescription = null)
             }
         }
 
         ParamInfo(
-            header = "End hour",
-            desc = "Description form work hours"
+            header = "Work end time",
+            desc = "Time when you end work in $dayName"
         ) {
-            Text("${workDay.workHours.endHour}:${workDay.workHours.endMinute}")
-            Button(
+            TextButton(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+                shape = OutlinedTextFieldDefaults.shape,
+                contentPadding = OutlinedTextFieldDefaults.contentPadding(),
+                modifier = Modifier.weight(0.3f),
                 onClick = {
                     timePickerContainer = TimePickerContainer(
                         initialHour = workDay.workHours.endHour,
@@ -156,13 +176,14 @@ fun DayEditComposable(
                     timePickerShow = true
                 }
             ) {
-                Text("Edit")
+                Text(workDay.workHours.endTime)
+                Icon(Icons.Filled.Schedule, contentDescription = null)
             }
         }
 
         ParamInfo(
-            header = "Break every",
-            desc = "Description form break every"
+            header = "Work duration between breaks",
+            desc = "How many minutes you work between breaks"
         ) {
 
             val breakEveryXMinutes = rememberTextFieldState("${workDay.breakEveryXMinutes}")
@@ -193,13 +214,16 @@ fun DayEditComposable(
                 textStyle = TextStyle(
                     textAlign = TextAlign.End
                 ),
-                modifier = Modifier.weight(0.2f)
+                trailingIcon = {
+                    Icon(Icons.Filled.Edit, contentDescription = null)
+                },
+                modifier = Modifier.weight(0.3f)
             )
         }
 
         ParamInfo(
             header = "Break duration",
-            desc = "Description form break duration"
+            desc = "How many minutes you take a break"
         ) {
 
             val breakDurationMinutes = rememberTextFieldState("${workDay.breakDurationMinutes}")
@@ -230,7 +254,10 @@ fun DayEditComposable(
                 textStyle = TextStyle(
                     textAlign = TextAlign.End
                 ),
-                modifier = Modifier.weight(0.2f)
+                trailingIcon = {
+                    Icon(Icons.Filled.Edit, contentDescription = null)
+                },
+                modifier = Modifier.weight(0.3f)
             )
         }
     }
