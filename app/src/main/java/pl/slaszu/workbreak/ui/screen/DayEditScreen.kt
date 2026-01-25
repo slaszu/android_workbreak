@@ -6,26 +6,41 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.then
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
@@ -149,14 +164,74 @@ fun DayEditComposable(
             header = "Break every",
             desc = "Description form break every"
         ) {
-            Text("${workDay.breakEveryXMinutes}")
+
+            val breakEveryXMinutes = rememberTextFieldState("${workDay.breakEveryXMinutes}")
+            LaunchedEffect(breakEveryXMinutes) {
+                snapshotFlow { breakEveryXMinutes.text.toString() }.collectLatest {
+                    if (it == workDay.breakEveryXMinutes.toString()) return@collectLatest
+                    delay(300)
+                    onSave(
+                        workDay.copy(
+                            breakEveryXMinutes = it.toIntOrNull() ?: 0
+                        )
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                state = breakEveryXMinutes,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone
+                ),
+                lineLimits = TextFieldLineLimits.SingleLine,
+                inputTransformation = InputTransformation.maxLength(3)
+                    .then {
+                        if (!asCharSequence().isDigitsOnly()) {
+                            revertAllChanges()
+                        }
+                    },
+                textStyle = TextStyle(
+                    textAlign = TextAlign.End
+                ),
+                modifier = Modifier.weight(0.2f)
+            )
         }
 
         ParamInfo(
             header = "Break duration",
             desc = "Description form break duration"
         ) {
-            Text("${workDay.breakDurationMinutes}")
+
+            val breakDurationMinutes = rememberTextFieldState("${workDay.breakDurationMinutes}")
+            LaunchedEffect(breakDurationMinutes) {
+                snapshotFlow { breakDurationMinutes.text.toString() }.collectLatest {
+                    if (it == workDay.breakDurationMinutes.toString()) return@collectLatest
+                    delay(300)
+                    onSave(
+                        workDay.copy(
+                            breakDurationMinutes = it.toIntOrNull() ?: 0
+                        )
+                    )
+                }
+            }
+
+            OutlinedTextField(
+                state = breakDurationMinutes,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone
+                ),
+                lineLimits = TextFieldLineLimits.SingleLine,
+                inputTransformation = InputTransformation.maxLength(3)
+                    .then {
+                        if (!asCharSequence().isDigitsOnly()) {
+                            revertAllChanges()
+                        }
+                    },
+                textStyle = TextStyle(
+                    textAlign = TextAlign.End
+                ),
+                modifier = Modifier.weight(0.2f)
+            )
         }
     }
 }
