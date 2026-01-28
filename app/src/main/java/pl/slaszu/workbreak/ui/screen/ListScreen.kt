@@ -1,16 +1,27 @@
 package pl.slaszu.workbreak.ui.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.CopyAll
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
+import androidx.compose.ui.unit.dp
 import kotlinx.datetime.DayOfWeek
 import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
@@ -48,19 +59,30 @@ private fun DayComposable(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier
 ) {
-    Column(
-        modifier = modifier,
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier.padding(2.dp, 5.dp)
     ) {
-        Row {
-            Checkbox(
-                checked = workDay.active,
-                onCheckedChange = onCheckedChange
+        Checkbox(
+            checked = workDay.active,
+            onCheckedChange = onCheckedChange,
+            modifier = Modifier.weight(0.1f)
+        )
+        Column(
+            modifier = Modifier.weight(0.8f)
+        ) {
+            Text(
+                text = stringResource(day.dayTranslationKey),
+                fontSize = TextUnit(4f, TextUnitType.Em)
             )
-            Text(stringResource(day.dayTranslationKey))
+            Text("Work hours: ${workDay.workHours.startTime} - ${workDay.workHours.endTime}")
+            Text("Break every ${workDay.breakEveryXMinutes} minutes (every break: ${workDay.breakDurationMinutes} minutes)")
         }
-
-        Text("${workDay.workHours}")
-        Text("${workDay.breakEveryXMinutes} & ${workDay.breakDurationMinutes}")
-
+        IconButton(
+            onClick = {},
+            modifier = Modifier.weight(0.1f)
+        ) {
+            Icon(Icons.Filled.ContentCopy, null)
+        }
     }
 }

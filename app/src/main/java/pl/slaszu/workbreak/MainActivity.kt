@@ -10,11 +10,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +53,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var scheduleService: ScheduleService
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -68,7 +84,14 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             WorkBreakTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    topBar = {
+                        TopAppBarElement(
+                            navController = navController
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
                     Column(
                         verticalArrangement = Arrangement.Top,
                         modifier = Modifier.padding(innerPadding)
@@ -84,8 +107,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDayClick = { day ->
                                         navController.navigate(DayEditRoute(day))
-                                    },
-                                    modifier = Modifier.padding(innerPadding)
+                                    }
                                 )
                             }
 
@@ -109,4 +131,35 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopAppBarElement(
+    navController: NavHostController
+) {
+    val route by navController.currentBackStackEntryAsState()
+
+
+    TopAppBar(
+        actions = {
+            IconButton(
+                onClick = { navController.navigate(ListRouting) }
+            ) {
+                Icon(Icons.Filled.Settings, null)
+            }
+        },
+        navigationIcon = {
+            if (route?.destination?.hasRoute(ListRouting::class) != true) {
+                IconButton(
+                    onClick = { navController.navigate(ListRouting) }
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                }
+            }
+        },
+        title = {
+            Text("Work break reminder")
+        }
+    )
 }

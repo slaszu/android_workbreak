@@ -25,3 +25,10 @@ data class WorkHours(
         }
     }
 }
+
+fun WorkHours.getDurationMinutes(): Int {
+    val start = startHour * 60 + startMinute
+    val end = endHour * 60 + endMinute
+    return end - start
+}
+

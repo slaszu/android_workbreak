@@ -23,3 +23,14 @@ data class WorkDay(
         }
     }
 }
+
+fun WorkDay.getBreaksQuantity(): Int {
+    val durationMinutes = workHours.getDurationMinutes()
+    return durationMinutes / (breakEveryXMinutes + breakDurationMinutes)
+}
+
+fun WorkDay.getWorkDurationMinutes(): Int {
+    val durationMinutes = workHours.getDurationMinutes()
+    val breaksQuantity = getBreaksQuantity()
+    return durationMinutes - breaksQuantity * (breakDurationMinutes)
+}

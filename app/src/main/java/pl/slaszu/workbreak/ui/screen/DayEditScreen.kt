@@ -2,8 +2,8 @@ package pl.slaszu.workbreak.ui.screen
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,15 +18,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ShapeDefaults
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -40,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,6 +50,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
+import pl.slaszu.workbreak.domain.model.getBreaksQuantity
+import pl.slaszu.workbreak.domain.model.getWorkDurationMinutes
+import pl.slaszu.workbreak.domain.utils.asMinutesToHoursAndMinutes
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
 private data class TimePickerContainer(
@@ -145,8 +143,19 @@ fun DayEditComposable(
                     timePickerShow = true
                 }
             ) {
-                Text(workDay.workHours.startTime)
-                Icon(Icons.Filled.Schedule, contentDescription = null)
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = workDay.workHours.startTime
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.Schedule,
+                        contentDescription = null,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                }
             }
         }
 
@@ -176,8 +185,19 @@ fun DayEditComposable(
                     timePickerShow = true
                 }
             ) {
-                Text(workDay.workHours.endTime)
-                Icon(Icons.Filled.Schedule, contentDescription = null)
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = workDay.workHours.endTime
+                    )
+                    Icon(
+                        imageVector = Icons.Filled.Schedule,
+                        contentDescription = null,
+                        modifier = Modifier.padding(start = 5.dp)
+                    )
+                }
             }
         }
 
@@ -187,10 +207,10 @@ fun DayEditComposable(
         ) {
 
             val breakEveryXMinutes = rememberTextFieldState("${workDay.breakEveryXMinutes}")
-            LaunchedEffect(breakEveryXMinutes) {
+            LaunchedEffect(workDay) {
                 snapshotFlow { breakEveryXMinutes.text.toString() }.collectLatest {
                     if (it == workDay.breakEveryXMinutes.toString()) return@collectLatest
-                    delay(300)
+                    delay(150)
                     onSave(
                         workDay.copy(
                             breakEveryXMinutes = it.toIntOrNull() ?: 0
@@ -227,10 +247,10 @@ fun DayEditComposable(
         ) {
 
             val breakDurationMinutes = rememberTextFieldState("${workDay.breakDurationMinutes}")
-            LaunchedEffect(breakDurationMinutes) {
+            LaunchedEffect(workDay) {
                 snapshotFlow { breakDurationMinutes.text.toString() }.collectLatest {
                     if (it == workDay.breakDurationMinutes.toString()) return@collectLatest
-                    delay(300)
+                    delay(150)
                     onSave(
                         workDay.copy(
                             breakDurationMinutes = it.toIntOrNull() ?: 0
@@ -260,6 +280,22 @@ fun DayEditComposable(
                 modifier = Modifier.weight(0.3f)
             )
         }
+        WorkDaySummary(
+            workDay = workDay
+        )
+
+    }
+
+
+}
+
+@Composable
+private fun WorkDaySummary(
+    workDay: WorkDay
+) {
+    Column {
+        Text("Time of work : ${workDay.getWorkDurationMinutes().asMinutesToHoursAndMinutes()}")
+        Text("Breaks qty : ${workDay.getBreaksQuantity()}")
     }
 }
 
@@ -294,30 +330,6 @@ private fun ParamInfo(
         content()
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//private fun TimeDialogModel(
-//    onConfirm: (TimePickerState) -> Unit,
-//    onDismiss: () -> Unit,
-//) {
-//    val currentTime = Calendar.getInstance()
-//
-//    val timePickerState = rememberTimePickerState(
-//        initialHour = currentTime.get(Calendar.HOUR_OF_DAY),
-//        initialMinute = currentTime.get(Calendar.MINUTE),
-//        is24Hour = true,
-//    )
-//
-//    TimePickerDialog(
-//        onDismiss = { onDismiss() },
-//        onConfirm = { onConfirm(timePickerState) }
-//    ) {
-//        TimePicker(
-//            state = timePickerState,
-//        )
-//    }
-//}
 
 @Composable
 private fun TimePickerDialog(

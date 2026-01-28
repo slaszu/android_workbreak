@@ -1,5 +1,6 @@
 package pl.slaszu.workbreak.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +35,7 @@ class WorkWeekViewModel @Inject constructor(
             WorkWeekRepository.persist(
                 newWorkWeek
             )
+            Log.d("myapp", "setWorkDay: $newWorkWeek")
         }
     }
 }
