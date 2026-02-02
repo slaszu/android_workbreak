@@ -54,13 +54,12 @@ class WorkService {
         var startDate = currentDay.plusHours(timePeriod.start.hours.toLong())
             .plusMinutes(timePeriod.start.minutes.toLong())
 
-        val endDate = currentDay.plusHours(timePeriod.end.hours.toLong())
+        var endDate = currentDay.plusHours(timePeriod.end.hours.toLong())
             .plusMinutes(timePeriod.end.minutes.toLong())
-            .also { localeDateTime ->
-                if (timePeriod.endNextDay) {
-                    localeDateTime.plusDays(1)
-                }
-            }
+
+        if (timePeriod.endNextDay) {
+            endDate = endDate.plusDays(1)
+        }
 
         val list = mutableListOf<WorkPeriod>()
 

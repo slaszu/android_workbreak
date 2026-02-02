@@ -33,10 +33,28 @@ android {
     buildFeatures {
         compose = true
     }
+    testOptions {
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
 }
 
 kotlin {
     jvmToolchain(17)
+}
+
+tasks.withType<Test> {
+    testLogging {
+        // Wyświetla standardowe wyjście (System.out.print) i błędy
+        showStandardStreams = true
+
+        // Dodatkowe info o statusie testów
+        events("passed", "skipped", "failed", "standardOut", "standardError")
+
+        // Opcjonalnie: bardziej szczegółowy format
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
 }
 
 dependencies {
@@ -51,9 +69,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.compose.material.icons.extended)
-    testImplementation(libs.junit.jupiter.api)
-    testRuntimeOnly(libs.junit.jupiter.engine)
-    testCompileOnly(libs.junit.jupiter.params)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.junit.jupiter)
+    testRuntimeOnly(libs.junit.platform.launcher)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
