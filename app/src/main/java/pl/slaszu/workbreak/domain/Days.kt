@@ -16,6 +16,11 @@ enum class Days(val dayTranslationKey: Int, val dayOfWeek: DayOfWeek) {
         fun getForDayOfWeek(dayOfWeek: DayOfWeek): Days {
             return entries.first { it.dayOfWeek == dayOfWeek }
         }
+
+        fun getNextDayOfWeek(dayOfWeek: DayOfWeek): DayOfWeek {
+            val index = entries.indexOfFirst { it.dayOfWeek == dayOfWeek }
+            return entries[(index + 1) % entries.size].dayOfWeek
+        }
     }
 
 }

@@ -148,7 +148,7 @@ fun DayEditComposable(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = workDay.workHours.startTime
+                        text = workDay.workHours.startTime.toString()
                     )
                     Icon(
                         imageVector = Icons.Filled.Schedule,
@@ -190,7 +190,7 @@ fun DayEditComposable(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = workDay.workHours.endTime
+                        text = workDay.workHours.endTime.toString()
                     )
                     Icon(
                         imageVector = Icons.Filled.Schedule,

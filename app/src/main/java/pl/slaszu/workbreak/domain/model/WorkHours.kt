@@ -1,6 +1,8 @@
 package pl.slaszu.workbreak.domain.model
 
 import kotlinx.serialization.Serializable
+import pl.slaszu.workbreak.domain.model.time.Time
+import pl.slaszu.workbreak.domain.model.time.TimePeriod
 
 @Serializable
 data class WorkHours(
@@ -9,10 +11,13 @@ data class WorkHours(
     val endHour: Int,
     val endMinute: Int,
 ) {
-    val startTime: String
-        get() = "$startHour:${startMinute.toString().padStart(2, '0')}"
-    val endTime: String
-        get() = "$endHour:${endMinute.toString().padStart(2, '0')}"
+    val startTime: Time
+        get() = Time(hours = startHour, minutes = startMinute)
+    val endTime: Time
+        get() = Time(hours = endHour, minutes = endMinute)
+
+    val timePeriod: TimePeriod
+        get() = TimePeriod(start = startTime, end = endTime)
 
     companion object {
         fun create(): WorkHours {
@@ -25,10 +30,3 @@ data class WorkHours(
         }
     }
 }
-
-fun WorkHours.getDurationMinutes(): Int {
-    val start = startHour * 60 + startMinute
-    val end = endHour * 60 + endMinute
-    return end - start
-}
-
