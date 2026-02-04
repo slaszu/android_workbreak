@@ -66,9 +66,9 @@ class WorkService {
         while (startDate < endDate) {
 
             // for work
-            var breakFlag = false;
+            var breakFlag = false
             var nextDate = startDate.plusMinutes(workDay.breakEveryXMinutes.toLong())
-            if (nextDate > endDate) {
+            if (nextDate >= endDate) {
                 nextDate = endDate
                 breakFlag = true
             }
@@ -76,7 +76,7 @@ class WorkService {
             list.add(
                 WorkPeriod(
                     startLocaleDateTime = startDate,
-                    endLocaleDateTime = nextDate,
+                    endLocaleDateTime = nextDate.minusNanos(1),
                     type = WorkTypeEnum.WORK
                 )
             )
@@ -90,7 +90,7 @@ class WorkService {
             // for break
             breakFlag = false
             nextDate = nextDate.plusMinutes(workDay.breakDurationMinutes.toLong())
-            if (nextDate > endDate) {
+            if (nextDate >= endDate) {
                 nextDate = endDate
                 breakFlag = true
             }
@@ -98,7 +98,7 @@ class WorkService {
             list.add(
                 WorkPeriod(
                     startLocaleDateTime = startDate,
-                    endLocaleDateTime = nextDate,
+                    endLocaleDateTime = nextDate.minusNanos(1),
                     type = WorkTypeEnum.BREAK
                 )
             )
@@ -124,7 +124,10 @@ class WorkService {
     private fun getNextDay(day: LocalDateTime): LocalDateTime {
         return resetDay(day.plusDays(1))
     }
+}
 
+fun List<WorkPeriod>.findWorkPeriod(dateTime: LocalDateTime): WorkPeriod? {
+    return this.find { it.startLocaleDateTime <= dateTime && it.endLocaleDateTime >= dateTime }
 }
 
 data class WorkPeriod(

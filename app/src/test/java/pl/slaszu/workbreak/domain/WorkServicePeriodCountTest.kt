@@ -2,7 +2,6 @@ package pl.slaszu.workbreak.domain
 
 import kotlinx.datetime.DayOfWeek
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -13,11 +12,11 @@ import java.util.stream.Stream
 import java.time.DayOfWeek as JavaDayOfWeek
 
 
-class WorkServiceTest {
+class WorkServicePeriodCountTest {
 
     @ParameterizedTest
-    @MethodSource("provideStringsForIsBlank")
-    fun checkPeriodsForWorkDay(workDay: WorkDay, expectedSize: Int) {
+    @MethodSource("provide")
+    fun check(workDay: WorkDay, expectedSize: Int) {
 
         val workService = WorkService()
         val workPeriodList = workService.toWorkPeriodList(
@@ -32,7 +31,7 @@ class WorkServiceTest {
 
     companion object {
         @JvmStatic
-        fun provideStringsForIsBlank(): Stream<Arguments> {
+        fun provide(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(
                     WorkDay(
@@ -63,6 +62,36 @@ class WorkServiceTest {
                         active = true
                     ),
                     16
+                ),
+                Arguments.of(
+                    WorkDay(
+                        dayOfWeek = DayOfWeek.THURSDAY,
+                        workHours = WorkHours(
+                            startHour = 18,
+                            startMinute = 0,
+                            endHour = 2,
+                            endMinute = 0
+                        ),
+                        breakDurationMinutes = 10,
+                        breakEveryXMinutes = 60,
+                        active = true
+                    ),
+                    13
+                ),
+                Arguments.of(
+                    WorkDay(
+                        dayOfWeek = DayOfWeek.THURSDAY,
+                        workHours = WorkHours(
+                            startHour = 18,
+                            startMinute = 0,
+                            endHour = 2,
+                            endMinute = 0
+                        ),
+                        breakDurationMinutes = 5,
+                        breakEveryXMinutes = 60,
+                        active = true
+                    ),
+                    15
                 ),
 
                 Arguments.of(
