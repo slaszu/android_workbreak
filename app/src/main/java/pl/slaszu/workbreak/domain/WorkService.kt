@@ -13,7 +13,7 @@ class WorkService {
         while (currentDay.dayOfWeek != dayOfWeek) {
             currentDay = getPrevDay(currentDay)
         }
-        return currentDay
+        return resetDay(currentDay)
     }
 
 

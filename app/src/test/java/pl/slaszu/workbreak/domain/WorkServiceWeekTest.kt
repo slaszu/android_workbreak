@@ -22,17 +22,17 @@ class WorkServiceWeekTest {
 
         val workService = WorkService()
 
-        val startDatetime =
+        val thursday =
             workService.getPrevDayOfWeek(LocalDateTime.now(), JavaDayOfWeek.THURSDAY)
 
         val workPeriodList = workService.toWorkPeriodList(
             workWeek = workWeek,
-            dateTime = startDatetime
+            dateTime = thursday
         )
 
         println(workPeriodList)
 
-        val lookingForDateTime = datetimeModifier(startDatetime)
+        val lookingForDateTime = datetimeModifier(thursday)
 
         println(lookingForDateTime)
 
@@ -43,9 +43,52 @@ class WorkServiceWeekTest {
     companion object {
         @JvmStatic
         fun provide(): Stream<Arguments> {
+            val workWeekInactive = WorkWeek.create()
+            val workWeekActive = workWeekInactive.copy(
+                workDays = workWeekInactive.workDays.map {
+                    it.copy(active = true)
+                }
+            )
             return Stream.of(
-
-
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },
+                    null,
+                ),
+                Arguments.of(
+                    workWeekInactive,
+                    { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },
+                    null,
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(8) },
+                    WorkTypeEnum.WORK,
+                ),
+                Arguments.of(
+                    workWeekInactive,
+                    { thursday: LocalDateTime -> thursday.plusHours(8) },
+                    null,
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.minusHours(24).plusHours(8) },
+                    WorkTypeEnum.WORK,
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime ->
+                        thursday.minusHours(24).plusHours(8).plusMinutes(44)
+                    },
+                    WorkTypeEnum.WORK,
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime ->
+                        thursday.minusHours(24).plusHours(8).plusMinutes(45)
+                    },
+                    WorkTypeEnum.BREAK,
+                )
             )
         }
     }

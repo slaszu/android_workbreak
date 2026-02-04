@@ -6,9 +6,9 @@ import pl.slaszu.workbreak.domain.model.WorkHours
 
 class WorkDayFactory {
     companion object {
-        fun createActiveDay8to16(): WorkDay {
+        fun createActiveDay8to16(dayOfWeek: DayOfWeek = DayOfWeek.THURSDAY): WorkDay {
             return WorkDay(
-                dayOfWeek = DayOfWeek.THURSDAY,
+                dayOfWeek = dayOfWeek,
                 workHours = WorkHours(
                     startHour = 8,
                     startMinute = 0,
@@ -20,9 +20,10 @@ class WorkDayFactory {
                 active = true
             )
         }
-        fun createActiveDay18to2(): WorkDay {
+
+        fun createActiveDay18to2(dayOfWeek: DayOfWeek = DayOfWeek.THURSDAY): WorkDay {
             return WorkDay(
-                dayOfWeek = DayOfWeek.THURSDAY,
+                dayOfWeek = dayOfWeek,
                 workHours = WorkHours(
                     startHour = 18,
                     startMinute = 0,
