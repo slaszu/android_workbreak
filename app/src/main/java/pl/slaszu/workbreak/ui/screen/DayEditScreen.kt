@@ -18,7 +18,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -38,9 +42,13 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -50,6 +58,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
+import pl.slaszu.workbreak.domain.model.getBreakDurationMinutes
 import pl.slaszu.workbreak.domain.model.getBreaksQuantity
 import pl.slaszu.workbreak.domain.model.getWorkDurationMinutes
 import pl.slaszu.workbreak.domain.utils.asMinutesToHoursAndMinutes
@@ -115,7 +124,18 @@ fun DayEditComposable(
     Column(modifier = Modifier.padding(10.dp)) {
         val dayName = stringResource(Days.getForDayOfWeek(workDay.dayOfWeek).dayTranslationKey)
 
-        Text(dayName)
+        Text(
+            text = dayName,
+            fontSize = TextUnit(4f, TextUnitType.Em),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+
+        HorizontalDivider(
+            modifier = Modifier.padding(0.dp, 10.dp),
+        )
 
         ParamInfo(
             header = "Work start time",
@@ -161,7 +181,17 @@ fun DayEditComposable(
 
         ParamInfo(
             header = "Work end time",
-            desc = "Time when you end work in $dayName"
+            desc = "Time when you end work in $dayName",
+            error = if (workDay.workHours.timePeriod.endNextDay) {
+                "Next day. At ${workDay.workHours.endTime} on ${
+                    stringResource(
+                        Days.getNextDayOfWeek(
+                            workDay.dayOfWeek
+                        ).dayTranslationKey
+                    )
+                }"
+            } else null
+
         ) {
             TextButton(
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -280,6 +310,23 @@ fun DayEditComposable(
                 modifier = Modifier.weight(0.3f)
             )
         }
+
+        ParamInfo(
+            header = "Day active",
+            desc = "Is day active?"
+        ) {
+            Checkbox(
+                checked = workDay.active,
+                onCheckedChange = {
+                    onSave(
+                        workDay.copy(
+                            active = it
+                        )
+                    )
+                }
+            )
+        }
+
         WorkDaySummary(
             workDay = workDay
         )
@@ -293,16 +340,67 @@ fun DayEditComposable(
 private fun WorkDaySummary(
     workDay: WorkDay
 ) {
-    Column {
-        Text("Time of work : ${workDay.getWorkDurationMinutes().asMinutesToHoursAndMinutes()}")
-        Text("Breaks qty : ${workDay.getBreaksQuantity()}")
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(15.dp)
+        ) {
+            Text(
+                text = "Summary",
+            )
+            HorizontalDivider(
+                modifier = Modifier.padding(0.dp, 5.dp),
+            )
+            Text(
+                buildAnnotatedString {
+                    append("Work duration ")
+
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(workDay.getWorkDurationMinutes().asMinutesToHoursAndMinutes())
+                    }
+                }
+            )
+            Text(
+                buildAnnotatedString {
+                    append("Duration of all breaks ")
+
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(workDay.getBreakDurationMinutes().asMinutesToHoursAndMinutes())
+                    }
+                }
+            )
+            Text(
+                buildAnnotatedString {
+                    append("Number of breaks ")
+
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("${workDay.getBreaksQuantity()}")
+                    }
+                }
+            )
+            if (workDay.active) {
+                Text("Day active")
+            } else {
+                Text(
+                    text = "Day inactive",
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
     }
+
 }
 
 @Composable
 private fun ParamInfo(
     header: String,
     desc: String,
+    error: String? = null,
     content: @Composable () -> Unit
 ) {
     Row(
@@ -326,6 +424,14 @@ private fun ParamInfo(
                 text = desc,
                 fontSize = TextUnit(3f, TextUnitType.Em),
             )
+
+            error?.let {
+                Text(
+                    text = it,
+                    fontSize = TextUnit(3f, TextUnitType.Em),
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
         }
         content()
     }
