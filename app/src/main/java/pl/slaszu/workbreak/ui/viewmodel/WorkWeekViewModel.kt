@@ -1,6 +1,7 @@
 package pl.slaszu.workbreak.ui.viewmodel
 
 import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +18,15 @@ import pl.slaszu.workbreak.domain.model.WorkWeekRepository
 class WorkWeekViewModel @Inject constructor(
     private val WorkWeekRepository: WorkWeekRepository
 ) : ViewModel() {
+
+    private var snackbarHostState: SnackbarHostState? = null
+
     // Expose screen UI state
     val workWeekFlow = this.WorkWeekRepository.get()
+
+    fun registerSnackbarHostState(snackbarHostState: SnackbarHostState) {
+        this.snackbarHostState = snackbarHostState
+    }
 
     fun setWorkDayActive(workWeek: WorkWeek, dayOfWeek: DayOfWeek, active: Boolean) {
         val newWorkWeek = SetWorkDayActivity().setWorkDay(workWeek, dayOfWeek, active)
@@ -35,6 +43,7 @@ class WorkWeekViewModel @Inject constructor(
             WorkWeekRepository.persist(
                 newWorkWeek
             )
+            snackbarHostState?.showSnackbar("saved")
             Log.d("myapp", "setWorkDay: $newWorkWeek")
         }
     }
