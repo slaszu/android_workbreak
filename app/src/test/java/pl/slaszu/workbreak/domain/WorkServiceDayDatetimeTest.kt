@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.domain.fake.WorkDayFactory
 import pl.slaszu.workbreak.domain.model.WorkDay
+import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.LocalDateTime
 import java.util.stream.Stream
 import java.time.DayOfWeek as JavaDayOfWeek
@@ -24,8 +25,7 @@ class WorkServiceDayDatetimeTest {
 
         val workService = WorkService()
 
-        val startDatetime =
-            workService.getPrevDayOfWeek(LocalDateTime.now(), JavaDayOfWeek.THURSDAY)
+        val startDatetime = getPrevDayOfWeek(LocalDateTime.now(), JavaDayOfWeek.THURSDAY)
 
         val workPeriodList = workService.toWorkPeriodList(
             workDay = workDay,

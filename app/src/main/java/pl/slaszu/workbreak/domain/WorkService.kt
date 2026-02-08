@@ -3,19 +3,13 @@ package pl.slaszu.workbreak.domain
 import kotlinx.datetime.toKotlinDayOfWeek
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.utils.getNextDay
+import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
+import pl.slaszu.workbreak.domain.utils.resetDay
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 
 class WorkService {
-
-    fun getPrevDayOfWeek(startDay: LocalDateTime, dayOfWeek: DayOfWeek): LocalDateTime {
-        var currentDay = startDay
-        while (currentDay.dayOfWeek != dayOfWeek) {
-            currentDay = getPrevDay(currentDay)
-        }
-        return resetDay(currentDay)
-    }
-
 
     fun toWorkPeriodList(workWeek: WorkWeek, dateTime: LocalDateTime): List<WorkPeriod> {
         val list = mutableListOf<WorkPeriod>()
@@ -112,23 +106,28 @@ class WorkService {
 
         return list.toList()
     }
-
-    private fun resetDay(day: LocalDateTime): LocalDateTime {
-        return day.withHour(0).withMinute(0).withSecond(0).withNano(0)
-    }
-
-    private fun getPrevDay(day: LocalDateTime): LocalDateTime {
-        return resetDay(day.minusDays(1))
-    }
-
-    private fun getNextDay(day: LocalDateTime): LocalDateTime {
-        return resetDay(day.plusDays(1))
-    }
 }
 
 fun List<WorkPeriod>.findWorkPeriod(dateTime: LocalDateTime): WorkPeriod? {
     return this.find { it.startLocaleDateTime <= dateTime && it.endLocaleDateTime >= dateTime }
 }
+
+fun List<WorkPeriod>.findNearestBreakWorkPeriod(dateTime: LocalDateTime): WorkPeriod? {
+
+    if (this.isEmpty()) {
+        return null
+    }
+
+    this.find { it.startLocaleDateTime > dateTime && it.type == WorkTypeEnum.BREAK }?.let {
+        return it
+    }
+
+    // rewind to the start of the week
+    val rewindDateTime = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
+
+    return this.find { it.startLocaleDateTime > rewindDateTime && it.type == WorkTypeEnum.BREAK }
+}
+
 
 data class WorkPeriod(
     val startLocaleDateTime: LocalDateTime,
