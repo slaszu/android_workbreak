@@ -23,11 +23,16 @@ class SetScheduleAlarm @Inject constructor(
         val workPeriodList = workService.toWorkPeriodList(workWeek, dateTime)
 
         var breakPeriod = workPeriodList.findWorkPeriod(dateTime)
+        var type = BreakScheduleAlarmType.END
         if (breakPeriod == null || breakPeriod.type != WorkTypeEnum.BREAK) {
             breakPeriod = workPeriodList.findNearestBreakWorkPeriod(dateTime)
+            type = BreakScheduleAlarmType.START
         }
 
-        if (breakPeriod == null) return null
+        if (breakPeriod == null) {
+            scheduleAlarmService.cancelAllAlarms()
+            return null
+        }
 
         val alarmDateTime = scheduleAlarmService.scheduleBreakAlarm(
             breakData = BreakScheduleAlarm(
@@ -36,7 +41,7 @@ class SetScheduleAlarm @Inject constructor(
                     end = breakPeriod.endLocaleDateTime.toKotlinLocalDateTime()
                 ),
                 workDay = workWeek.getWorkDay(breakPeriod.startLocaleDateTime.toKotlinLocalDateTime().dayOfWeek),
-                type = BreakScheduleAlarmType.START
+                type = type
             )
         )
 

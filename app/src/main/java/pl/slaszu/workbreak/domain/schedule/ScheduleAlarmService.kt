@@ -52,7 +52,23 @@ class ScheduleAlarmService @Inject constructor(
         return alarmDateTime
     }
 
-    private fun createPendingIntent(item: BreakScheduleAlarm): PendingIntent {
+    fun cancelAllAlarms() {
+        if (!schedulePermission.hasPermission()) {
+            Log.d("myapp", "Schedule permission not granted")
+            return
+        }
+
+        val pendingIntent = createPendingIntent(null)
+
+        val alarmManager =
+            applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        alarmManager.cancel(pendingIntent)
+        
+        Log.d("myapp", "Schedule all alarms CANCELLED")
+    }
+
+    private fun createPendingIntent(item: BreakScheduleAlarm?): PendingIntent {
         return PendingIntent.getBroadcast(
             applicationContext,
             1,

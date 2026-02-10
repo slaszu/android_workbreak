@@ -82,13 +82,14 @@ class MainActivity : ComponentActivity() {
 
             val viewModel by viewModels<WorkWeekViewModel>()
 
+            val snackbarHostState = remember { SnackbarHostState() }
+            viewModel.registerSnackbarHostState(snackbarHostState)
+
             val workWeek =
                 viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek.create()).value
 
             val navController = rememberNavController()
 
-            val snackbarHostState = remember { SnackbarHostState() }
-            viewModel.registerSnackbarHostState(snackbarHostState)
 
             WorkBreakTheme {
                 Scaffold(
@@ -140,8 +141,6 @@ class MainActivity : ComponentActivity() {
 
                         }
                     }
-
-
                 }
             }
         }

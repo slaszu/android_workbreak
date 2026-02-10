@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.application.SetWorkDay
@@ -29,6 +30,15 @@ class WorkWeekViewModel @Inject constructor(
     // Expose screen UI state
     val workWeekFlow = this.WorkWeekRepository.get()
 
+    init {
+        viewModelScope.launch {
+            workWeekFlow.first {
+                updateScheduleIfNeeded(it)
+                true
+            }
+        }
+    }
+
     fun registerSnackbarHostState(snackbarHostState: SnackbarHostState) {
         this.snackbarHostState = snackbarHostState
     }
@@ -47,7 +57,11 @@ class WorkWeekViewModel @Inject constructor(
     suspend fun updateScheduleIfNeeded(workWeek: WorkWeek) {
         val now = LocalDateTime.now(ZoneId.systemDefault())
         val alarmDateTime = useCaseSetScheduleAlarm.setNextBreakScheduleAlarm(workWeek, now)
+
         Log.d("myapp", "updateScheduleIfNeeded alarmDateTime: $alarmDateTime")
+
+        snackbarHostState?.currentSnackbarData?.dismiss()
+
         if (lastAlarmDateTime != alarmDateTime) {
             snackbarHostState?.showSnackbar("Alarm updated: $alarmDateTime")
         }
