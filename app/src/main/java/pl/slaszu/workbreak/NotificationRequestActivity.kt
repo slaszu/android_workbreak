@@ -19,7 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dagger.hilt.android.AndroidEntryPoint
-import pl.slaszu.workbreak.domain.notification.NotificationService
+import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 import javax.inject.Inject
 
@@ -27,13 +27,13 @@ import javax.inject.Inject
 class NotificationRequestActivity : ComponentActivity() {
 
     @Inject
-    lateinit var notificationService: NotificationService
+    lateinit var notificationPermissionService: NotificationPermissionService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        notificationService.prepareRequest(this) {
+        notificationPermissionService.prepareRequest(this) {
             this.startActivity(
                 Intent(this, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -47,7 +47,7 @@ class NotificationRequestActivity : ComponentActivity() {
                     NotificationRequest(
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        notificationService.launchRequest()
+                        notificationPermissionService.launchRequest()
                     }
                 }
             }

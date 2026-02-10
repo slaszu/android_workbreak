@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import pl.slaszu.workbreak.domain.schedule.ScheduleService
+import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 import javax.inject.Inject
 
@@ -26,13 +26,13 @@ import javax.inject.Inject
 class ScheduleRequestActivity : ComponentActivity() {
 
     @Inject
-    lateinit var scheduleService: ScheduleService
+    lateinit var schedulePermissionService: SchedulePermissionService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        scheduleService.prepareRequest(this) {
+        schedulePermissionService.prepareRequest(this) {
             this.startActivity(
                 Intent(this, MainActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -46,7 +46,7 @@ class ScheduleRequestActivity : ComponentActivity() {
                     ScheduleRequest(
                         modifier = Modifier.padding(innerPadding),
                     ) {
-                        scheduleService.launchRequest()
+                        schedulePermissionService.launchRequest()
                     }
                 }
             }

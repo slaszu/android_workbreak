@@ -10,8 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.CopyAll
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,18 +29,19 @@ import pl.slaszu.workbreak.domain.model.WorkWeek
 fun ListOfDaysComposable(
     workWeek: WorkWeek,
     modifier: Modifier = Modifier,
-    onActivityChange: (WorkWeek, DayOfWeek, Boolean) -> Unit,
+    onActivityChange: (WorkDay, Boolean) -> Unit,
     onDayClick: (DayOfWeek) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
         items(items = Days.entries) {
+            val workDay = workWeek.getWorkDay(it.dayOfWeek)
             DayComposable(
                 day = it,
-                workDay = workWeek.getWorkDay(it.dayOfWeek),
+                workDay = workDay,
                 onCheckedChange = { checked ->
-                    onActivityChange(workWeek, it.dayOfWeek, checked)
+                    onActivityChange(workDay, checked)
                 },
                 modifier = Modifier.clickable() {
                     onDayClick(it.dayOfWeek)

@@ -13,10 +13,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 
-class Notification(
+class NotificationPermission(
     val configuration: Configuration,
     val applicationContext: Context
 ) {
@@ -28,15 +27,13 @@ class Notification(
 
 
     fun registerChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val mChannel = NotificationChannel(
-                configuration.channelId,
-                configuration.channelName,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            mChannel.description = configuration.channelDescription
-            notificationManager.createNotificationChannel(mChannel)
-        }
+        val mChannel = NotificationChannel(
+            configuration.channelId,
+            configuration.channelName,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        mChannel.description = configuration.channelDescription
+        notificationManager.createNotificationChannel(mChannel)
     }
 
     fun hasPermission(): Boolean {
@@ -80,9 +77,7 @@ class Notification(
         }
 
         if (launcherActivityForResult !== null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                launcherActivityForResult?.launch(getIntent())
-            }
+            launcherActivityForResult?.launch(getIntent())
             return
         }
 
@@ -102,7 +97,6 @@ class Notification(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun getIntent(): Intent {
         return Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
             putExtra(Settings.EXTRA_APP_PACKAGE, applicationContext.packageName)

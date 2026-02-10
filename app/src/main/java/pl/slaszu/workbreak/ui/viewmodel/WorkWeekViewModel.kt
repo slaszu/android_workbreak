@@ -7,17 +7,22 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DayOfWeek
+import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.application.SetWorkDay
-import pl.slaszu.workbreak.application.SetWorkDayActivity
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.model.WorkWeekRepository
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @HiltViewModel
 class WorkWeekViewModel @Inject constructor(
-    private val WorkWeekRepository: WorkWeekRepository
+    private val WorkWeekRepository: WorkWeekRepository,
+    private val useCaseSetWorkDay: SetWorkDay,
+    private val useCaseSetScheduleAlarm: SetScheduleAlarm
 ) : ViewModel() {
+
+    private var lastAlarmDateTime: LocalDateTime? = null
 
     private var snackbarHostState: SnackbarHostState? = null
 
@@ -28,23 +33,25 @@ class WorkWeekViewModel @Inject constructor(
         this.snackbarHostState = snackbarHostState
     }
 
-    fun setWorkDayActive(workWeek: WorkWeek, dayOfWeek: DayOfWeek, active: Boolean) {
-        val newWorkWeek = SetWorkDayActivity().setWorkDay(workWeek, dayOfWeek, active)
+    fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay) {
+        val newWorkWeek = useCaseSetWorkDay.setWorkDay(workWeek, workDay)
         viewModelScope.launch {
             WorkWeekRepository.persist(
                 newWorkWeek
             )
+            Log.d("myapp", "setWorkDay: $newWorkWeek")
+            updateScheduleIfNeeded(newWorkWeek)
         }
     }
 
-    fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay) {
-        val newWorkWeek = SetWorkDay().setWorkDay(workWeek, workDay)
-        viewModelScope.launch {
-            WorkWeekRepository.persist(
-                newWorkWeek
-            )
-            snackbarHostState?.showSnackbar("saved")
-            Log.d("myapp", "setWorkDay: $newWorkWeek")
+    suspend fun updateScheduleIfNeeded(workWeek: WorkWeek) {
+        val now = LocalDateTime.now(ZoneId.systemDefault())
+        val alarmDateTime = useCaseSetScheduleAlarm.setNextBreakScheduleAlarm(workWeek, now)
+        Log.d("myapp", "updateScheduleIfNeeded alarmDateTime: $alarmDateTime")
+        if (lastAlarmDateTime != alarmDateTime) {
+            snackbarHostState?.showSnackbar("Alarm updated: $alarmDateTime")
         }
+
+        lastAlarmDateTime = alarmDateTime
     }
 }

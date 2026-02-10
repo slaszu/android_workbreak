@@ -1,27 +1,27 @@
 package pl.slaszu.workbreak.infrastructure.schedule
 
 import androidx.activity.ComponentActivity
-import pl.slaszu.schedule.Schedule
-import pl.slaszu.workbreak.domain.schedule.ScheduleService
+import pl.slaszu.schedule.SchedulePermission
+import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 
-class ScheduleServiceImpl(
-    private val schedule: Schedule
-) : ScheduleService {
+class SchedulePermissionServiceImpl(
+    private val schedulePermission: SchedulePermission
+) : SchedulePermissionService {
     override fun hasPermission(): Boolean {
-        return schedule.hasPermission()
+        return schedulePermission.hasPermission()
     }
 
     override fun prepareRequest(
         activity: ComponentActivity,
         callback: (Boolean) -> Unit
     ) {
-        schedule.prepareRequest(
+        schedulePermission.prepareRequest(
             activity = activity,
             callback = callback
         )
     }
 
     override fun launchRequest() {
-        schedule.launch()
+        schedulePermission.launch()
     }
 }

@@ -2,7 +2,7 @@ package pl.slaszu.workbreak.domain.notification
 
 import androidx.activity.ComponentActivity
 
-interface NotificationService {
+interface NotificationPermissionService {
     fun registerChannel()
     fun hasPermission(): Boolean
     fun shouldShowRationale(activity: ComponentActivity): Boolean

@@ -11,7 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 
-class Schedule(
+class SchedulePermission(
     private val applicationContext: Context
 ) {
     private val alarmManager =

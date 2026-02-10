@@ -7,19 +7,19 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import pl.slaszu.notification.Configuration
-import pl.slaszu.notification.Notification
-import pl.slaszu.workbreak.domain.notification.NotificationService
+import pl.slaszu.notification.NotificationPermission
+import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 
 @InstallIn(SingletonComponent::class)
 @Module
 object Providers {
 
     @Provides
-    fun getNotificationService(
+    fun getNotificationPermissionService(
         @ApplicationContext context: Context,
-    ): NotificationService {
-        return NotificationServiceImpl(
-            Notification(
+    ): NotificationPermissionService {
+        return NotificationPermissionServiceImpl(
+            NotificationPermission(
                 applicationContext = context,
                 configuration = Configuration(
                     channelId = "${context.packageName}.notification.channel",

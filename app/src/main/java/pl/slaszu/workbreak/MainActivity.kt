@@ -24,7 +24,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -36,8 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import pl.slaszu.workbreak.domain.model.WorkWeek
-import pl.slaszu.workbreak.domain.notification.NotificationService
-import pl.slaszu.workbreak.domain.schedule.ScheduleService
+import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
+import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.DayEditRoute
 import pl.slaszu.workbreak.ui.ListRouting
 import pl.slaszu.workbreak.ui.screen.DayEditComposable
@@ -50,17 +49,20 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var notificationService: NotificationService
+    lateinit var notificationPermissionService: NotificationPermissionService
 
     @Inject
-    lateinit var scheduleService: ScheduleService
+    lateinit var schedulePermissionService: SchedulePermissionService
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        if (!notificationService.hasPermission() || notificationService.shouldShowRationale(this)) {
+        if (!notificationPermissionService.hasPermission() || notificationPermissionService.shouldShowRationale(
+                this
+            )
+        ) {
             this.startActivity(
                 Intent(this, NotificationRequestActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -68,7 +70,7 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        if (!scheduleService.hasPermission()) {
+        if (!schedulePermissionService.hasPermission()) {
             this.startActivity(
                 Intent(this, ScheduleRequestActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -112,8 +114,11 @@ class MainActivity : ComponentActivity() {
                             composable<ListRouting> {
                                 ListOfDaysComposable(
                                     workWeek = workWeek,
-                                    onActivityChange = { workWeek, dayOfWeek, active ->
-                                        viewModel.setWorkDayActive(workWeek, dayOfWeek, active)
+                                    onActivityChange = { workDay, active ->
+                                        viewModel.setWorkDay(
+                                            workWeek,
+                                            workDay.copy(active = active)
+                                        )
                                     },
                                     onDayClick = { day ->
                                         navController.navigate(DayEditRoute(day))

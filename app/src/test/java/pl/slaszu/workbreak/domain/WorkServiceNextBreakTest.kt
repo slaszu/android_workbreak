@@ -106,6 +106,13 @@ class WorkServiceNextBreakTest {
                         thursday.plusDays(2).plusHours(9).plusMinutes(45)
                     },
                     { thursday: LocalDateTime -> thursday.plusHours(8).plusMinutes(45) }
+                ),
+                Arguments.of(
+                    WorkWeek.create(),
+                    { thursday: LocalDateTime ->
+                        thursday.plusDays(2).plusHours(9).plusMinutes(45)
+                    },
+                    { thursday: LocalDateTime -> null }
                 )
             )
         }

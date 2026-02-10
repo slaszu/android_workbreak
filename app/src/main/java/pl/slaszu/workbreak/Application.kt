@@ -2,17 +2,17 @@ package pl.slaszu.workbreak
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
-import pl.slaszu.workbreak.domain.notification.NotificationService
+import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 import javax.inject.Inject
 
 @HiltAndroidApp
 class Application : Application() {
 
     @Inject
-    lateinit var notificationService: NotificationService
+    lateinit var notificationPermissionService: NotificationPermissionService
 
     override fun onCreate() {
         super.onCreate()
-        notificationService.registerChannel()
+        notificationPermissionService.registerChannel()
     }
 }
