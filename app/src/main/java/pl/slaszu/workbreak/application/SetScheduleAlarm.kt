@@ -18,29 +18,46 @@ class SetScheduleAlarm @Inject constructor(
     private val scheduleAlarmService: ScheduleAlarmService
 ) {
 
-    fun setNextBreakScheduleAlarm(workWeek: WorkWeek, dateTime: LocalDateTime): LocalDateTime? {
+    fun setNextBreakScheduleAlarm(
+        workWeek: WorkWeek,
+        dateTime: LocalDateTime
+    ): LocalDateTime? {
         val workService = WorkService()
         val workPeriodList = workService.toWorkPeriodList(workWeek, dateTime)
 
+        // check if exist period for this datetime
         var breakPeriod = workPeriodList.findWorkPeriod(dateTime)
         var type = BreakScheduleAlarmType.END
+
+        // if not exists then find nearest break period
         if (breakPeriod == null || breakPeriod.type != WorkTypeEnum.BREAK) {
             breakPeriod = workPeriodList.findNearestBreakWorkPeriod(dateTime)
             type = BreakScheduleAlarmType.START
         }
 
+        // if no break period then cancel all alarms
         if (breakPeriod == null) {
             scheduleAlarmService.cancelAllAlarms()
             return null
         }
 
+        // calculate real start and end datetime
+        var startDateTime = breakPeriod.startLocaleDateTime
+        var endDateTime = breakPeriod.endLocaleDateTime
+
+        if (startDateTime < dateTime && endDateTime < dateTime) {
+            startDateTime = startDateTime.plusWeeks(1)
+            endDateTime = endDateTime.plusWeeks(1)
+        }
+
+
         val alarmDateTime = scheduleAlarmService.scheduleBreakAlarm(
             breakData = BreakScheduleAlarm(
                 period = BreakPeriod(
-                    start = breakPeriod.startLocaleDateTime.toKotlinLocalDateTime(),
-                    end = breakPeriod.endLocaleDateTime.toKotlinLocalDateTime()
+                    start = startDateTime.toKotlinLocalDateTime(),
+                    end = endDateTime.toKotlinLocalDateTime()
                 ),
-                workDay = workWeek.getWorkDay(breakPeriod.startLocaleDateTime.toKotlinLocalDateTime().dayOfWeek),
+                workWeek = workWeek,
                 type = type
             )
         )

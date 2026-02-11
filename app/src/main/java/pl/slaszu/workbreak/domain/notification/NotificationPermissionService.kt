@@ -8,4 +8,5 @@ interface NotificationPermissionService {
     fun shouldShowRationale(activity: ComponentActivity): Boolean
     fun prepareRequest(activity: ComponentActivity, callback: (Boolean) -> Unit)
     fun launchRequest()
+    fun channelId(): String
 }

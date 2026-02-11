@@ -25,6 +25,8 @@ class NotificationPermission(
     private var launcherRequestPermision: ActivityResultLauncher<String>? = null
     private var launcherActivityForResult: ActivityResultLauncher<Intent>? = null
 
+    val channelId
+        get() = configuration.channelId
 
     fun registerChannel() {
         val mChannel = NotificationChannel(

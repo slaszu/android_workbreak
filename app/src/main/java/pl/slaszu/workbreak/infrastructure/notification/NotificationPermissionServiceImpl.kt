@@ -29,4 +29,8 @@ class NotificationPermissionServiceImpl(
     override fun launchRequest() {
         notificationPermission.launchRequest()
     }
+
+    override fun channelId(): String {
+        return notificationPermission.channelId
+    }
 }
