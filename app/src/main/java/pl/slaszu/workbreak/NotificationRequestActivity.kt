@@ -5,19 +5,38 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dagger.hilt.android.AndroidEntryPoint
 import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
@@ -44,11 +63,11 @@ class NotificationRequestActivity : ComponentActivity() {
         setContent {
             WorkBreakTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NotificationRequest(
+                    NotificationRequestScreen(
+                        onAccept = { notificationPermissionService.launchRequest() },
+                        onDismiss = {},
                         modifier = Modifier.padding(innerPadding)
-                    ) {
-                        notificationPermissionService.launchRequest()
-                    }
+                    )
                 }
             }
         }
@@ -56,18 +75,109 @@ class NotificationRequestActivity : ComponentActivity() {
 }
 
 @Composable
-private fun NotificationRequest(modifier: Modifier = Modifier, allowAction: () -> Unit) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth().fillMaxHeight()
+fun NotificationRequestScreen(
+    onAccept: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Text("We need your permission to show notifications")
-        Button(
-            onClick =  allowAction
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            Text("Allow")
+            // 1. Ilustracja / Ikona
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.NotificationsActive,
+                    contentDescription = null,
+                    modifier = Modifier.size(60.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // 2. Nagłówek
+            Text(
+                text = "Bądź na bieżąco!",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 3. Opis korzyści
+            Text(
+                text = "Włącz powiadomienia, aby otrzymywać informacje o:",
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Lista punktowa
+            BenefitItem("Status Twoich zamówień w czasie rzeczywistym")
+            BenefitItem("Ekskluzywne kody rabatowe tylko dla Ciebie")
+            BenefitItem("Ważne alerty bezpieczeństwa konta")
+
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // 4. Przyciski akcji
+            Button(
+                onClick = onAccept,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text("Włącz powiadomienia", fontSize = 16.sp)
+            }
+
+            TextButton(
+                onClick = onDismiss,
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(
+                    "Może później",
+                    color = MaterialTheme.colorScheme.outline
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun BenefitItem(text: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.CheckCircle,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(text = text, style = MaterialTheme.typography.bodyMedium)
     }
 }
 
@@ -75,8 +185,9 @@ private fun NotificationRequest(modifier: Modifier = Modifier, allowAction: () -
 @Composable
 private fun NotificationRequestPreview() {
     WorkBreakTheme {
-        NotificationRequest() {
-
-        }
+        NotificationRequestScreen(
+            onAccept = {},
+            onDismiss = {}
+        )
     }
 }
