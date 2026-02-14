@@ -77,7 +77,6 @@ class ScheduleRequestActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun AlarmPermissionScreen(
     onOpenSettings: () -> Unit,
@@ -95,7 +94,7 @@ fun AlarmPermissionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // 1. Ikona tematyczna (Zegar / Alarm)
+            // 1. Icon (Clock / Alarm)
             Box(
                 modifier = Modifier
                     .size(140.dp)
@@ -115,9 +114,9 @@ fun AlarmPermissionScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // 2. Nagłówek
+            // 2. Header
             Text(
-                text = "Punktualność to podstawa",
+                text = "Punctuality is key",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.ExtraBold,
                 textAlign = TextAlign.Center,
@@ -126,9 +125,9 @@ fun AlarmPermissionScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. Wyjaśnienie (Bardzo ważne dla tego typu uprawnienia)
+            // 3. Explanation
             Text(
-                text = "System Android optymalizuje baterię, co może opóźniać Twoje przypomnienia. Pozwól nam działać z sekundową precyzją.",
+                text = "Android optimizes battery usage, which can delay your reminders. Grant permission for second-by-second accuracy.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -136,7 +135,7 @@ fun AlarmPermissionScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 4. Lista korzyści w karcie
+            // 4. Benefits Card
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -145,18 +144,18 @@ fun AlarmPermissionScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    AlarmBenefitRow(Icons.Rounded.Timer, "Alarmy co do sekundy")
+                    AlarmBenefitRow(Icons.Rounded.Timer, "Precise, to-the-second alarms")
                     AlarmBenefitRow(
                         Icons.Rounded.BatteryAlert,
-                        "Działa w trybie oszczędzania energii"
+                        "Works even in battery saver mode"
                     )
-                    AlarmBenefitRow(Icons.Rounded.Update, "Niezawodne przypomnienia cykliczne")
+                    AlarmBenefitRow(Icons.Rounded.AlarmOn, "Reliable reminders")
                 }
             }
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // 5. Przyciski
+            // 5. Action Buttons
             Button(
                 onClick = onOpenSettings,
                 modifier = Modifier
@@ -164,14 +163,14 @@ fun AlarmPermissionScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Przejdź do ustawień", fontSize = 16.sp)
+                Text("Go to Settings", fontSize = 16.sp)
             }
 
             TextButton(
                 onClick = onSkip,
                 modifier = Modifier.padding(top = 12.dp)
             ) {
-                Text("Ustawie to później", color = MaterialTheme.colorScheme.outline)
+                Text("Maybe later", color = MaterialTheme.colorScheme.outline)
             }
         }
     }

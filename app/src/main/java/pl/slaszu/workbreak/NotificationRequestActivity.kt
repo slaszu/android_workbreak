@@ -91,7 +91,7 @@ fun NotificationRequestScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // 1. Ilustracja / Ikona
+            // 1. Illustration / Icon
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -111,9 +111,9 @@ fun NotificationRequestScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 2. Nagłówek
+            // 2. Headline
             Text(
-                text = "Bądź na bieżąco!",
+                text = "Stay up to date!",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
@@ -121,9 +121,9 @@ fun NotificationRequestScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 3. Opis korzyści
+            // 3. Benefits Description
             Text(
-                text = "Włącz powiadomienia, aby otrzymywać informacje o:",
+                text = "Enable notifications to receive information from this application",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -131,14 +131,13 @@ fun NotificationRequestScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Lista punktowa
-            BenefitItem("Status Twoich zamówień w czasie rzeczywistym")
-            BenefitItem("Ekskluzywne kody rabatowe tylko dla Ciebie")
-            BenefitItem("Ważne alerty bezpieczeństwa konta")
+            // Bullet point list
+            BenefitItem("Breaks notifications")
+            BenefitItem("Start and finish work notifications")
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // 4. Przyciski akcji
+            // 4. Action Buttons
             Button(
                 onClick = onAccept,
                 modifier = Modifier
@@ -146,7 +145,7 @@ fun NotificationRequestScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Włącz powiadomienia", fontSize = 16.sp)
+                Text("Enable notifications", fontSize = 16.sp)
             }
 
             TextButton(
@@ -154,7 +153,7 @@ fun NotificationRequestScreen(
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text(
-                    "Może później",
+                    "Maybe later",
                     color = MaterialTheme.colorScheme.outline
                 )
             }
