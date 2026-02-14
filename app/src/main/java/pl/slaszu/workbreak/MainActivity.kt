@@ -10,27 +10,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +29,7 @@ import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.DayEditRoute
 import pl.slaszu.workbreak.ui.ListRouting
+import pl.slaszu.workbreak.ui.element.TopBarElement
 import pl.slaszu.workbreak.ui.screen.DayEditComposable
 import pl.slaszu.workbreak.ui.screen.ListOfDaysComposable
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
@@ -92,6 +83,8 @@ class MainActivity : ComponentActivity() {
 
             val navController = rememberNavController()
 
+            // 1. Definiujemy zachowanie (pinned oznacza, że bar nie znika, ale zmienia kolor)
+            val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
             WorkBreakTheme {
                 Scaffold(
@@ -101,11 +94,12 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     topBar = {
-                        TopAppBarElement(
-                            navController = navController
+                        TopBarElement(
+                            navController = navController,
+                            scrollBehavior = scrollBehavior // 3. Przekazujemy do TopBar
                         )
                     },
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // 2. Łączymy z przewijaniem
                 ) { innerPadding ->
                     Column(
                         verticalArrangement = Arrangement.Top,
@@ -139,8 +133,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
-
-
                         }
                     }
                 }
@@ -149,33 +141,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun TopAppBarElement(
-    navController: NavHostController
-) {
-    val route by navController.currentBackStackEntryAsState()
 
-
-    TopAppBar(
-        actions = {
-            IconButton(
-                onClick = { navController.navigate(ListRouting) }
-            ) {
-                Icon(Icons.Filled.Settings, null)
-            }
-        },
-        navigationIcon = {
-            if (route?.destination?.hasRoute(ListRouting::class) != true) {
-                IconButton(
-                    onClick = { navController.navigate(ListRouting) }
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
-                }
-            }
-        },
-        title = {
-            Text("Work break reminder")
-        }
-    )
-}
