@@ -87,7 +87,8 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         TopBarElement(
                             navController = navController,
-                            scrollBehavior = scrollBehavior // 3. Przekazujemy do TopBar
+                            scrollBehavior = scrollBehavior,
+                            showBadge = !notificationPermissionService.hasPermission() || !schedulePermissionService.hasPermission()
                         )
                     },
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // 2. Łączymy z przewijaniem
@@ -136,7 +137,18 @@ class MainActivity : ComponentActivity() {
 
                             composable<SettingRoute> {
                                 SettingScreen(
-                                    setting = setting
+                                    setting = setting,
+                                    onSave = {
+                                        viewModel.setSetting(it)
+                                    },
+                                    notificationPermission = notificationPermissionService.hasPermission(),
+                                    schedulePermission = schedulePermissionService.hasPermission(),
+                                    onOpenSettingsForNotification = {
+                                        startActivityForNotificationPermission()
+                                    },
+                                    onOpenSettingForSchedule = {
+                                        startActivityForSchedulePermission()
+                                    }
                                 )
                             }
 
@@ -168,11 +180,7 @@ class MainActivity : ComponentActivity() {
                     setting.copy(scheduleAlarmRequestDisplayed = true)
                 )
             }
-            this.startActivity(
-                Intent(this, ScheduleRequestActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-            )
+            startActivityForSchedulePermission()
             finish()
         }
 
@@ -182,13 +190,25 @@ class MainActivity : ComponentActivity() {
                     setting.copy(notificationRequestDisplayed = true)
                 )
             }
-            this.startActivity(
-                Intent(this, NotificationRequestActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-            )
+            startActivityForNotificationPermission()
             finish()
         }
+    }
+
+    private fun startActivityForSchedulePermission() {
+        this.startActivity(
+            Intent(this, ScheduleRequestActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+        )
+    }
+
+    private fun startActivityForNotificationPermission() {
+        this.startActivity(
+            Intent(this, NotificationRequestActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+        )
     }
 }
 

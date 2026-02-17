@@ -1,11 +1,18 @@
 package pl.slaszu.workbreak.ui.element
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row // Added import
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,7 +24,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.ui.ListRouting
@@ -39,11 +53,24 @@ import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 @Composable
 fun TopBarElement(
     navController: NavHostController,
-    scrollBehavior: TopAppBarScrollBehavior // Dodajemy parametr zachowania
+    scrollBehavior: TopAppBarScrollBehavior,
+    showBadge: Boolean = false,
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val isMainScreen = currentDestination?.hasRoute(ListRouting::class) == true
+
+    val scope = rememberCoroutineScope()
+    var visible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            while (true) {
+                delay(500)
+                visible = !visible
+            }
+        }
+    }
 
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior, // Łączymy zachowanie z komponentem
@@ -80,13 +107,30 @@ fun TopBarElement(
             }
         },
         actions = {
-            IconButton(onClick = {
-                navController.navigate(SettingRoute)
-            }) {
-                Icon(
-                    imageVector = Icons.Rounded.Settings,
-                    contentDescription = "Menu"
-                )
+            BadgedBox(
+                badge = {
+                    if (showBadge) {
+                        // Wrapped AnimatedVisibility in a Row to provide RowScope
+                        Row {
+                            AnimatedVisibility(
+                                visible = visible,
+                                enter = fadeIn(),
+                                exit = fadeOut()
+                            ) {
+                                Badge(modifier = Modifier.size(10.dp))
+                            }
+                        }
+                    }
+                }
+            ) {
+                IconButton(onClick = {
+                    navController.navigate(SettingRoute)
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Settings,
+                        contentDescription = "Menu"
+                    )
+                }
             }
         }
     )
