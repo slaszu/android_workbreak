@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -15,7 +13,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
@@ -23,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +31,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import pl.slaszu.workbreak.domain.Days
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.ui.ListRouting
+import pl.slaszu.workbreak.ui.SettingRoute
 import pl.slaszu.workbreak.ui.screen.DayEditComposable
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
@@ -48,12 +47,14 @@ fun TopBarElement(
 
     CenterAlignedTopAppBar(
         scrollBehavior = scrollBehavior, // Łączymy zachowanie z komponentem
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            // Kolor, gdy lista jest na samej górze
+        colors = TopAppBarDefaults.topAppBarColors(// Kolor, gdy lista jest na samej górze
             containerColor = MaterialTheme.colorScheme.background,
             // Kolor, gdy lista "wchodzi" pod TopBar (dodajemy lekką przezroczystość)
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp).copy(alpha = 0.85f),
+            scrolledContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
+                .copy(alpha = 0.85f),
+            navigationIconContentColor = Color.Unspecified,
             titleContentColor = MaterialTheme.colorScheme.primary,
+            actionIconContentColor = Color.Unspecified
         ),
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -79,9 +80,11 @@ fun TopBarElement(
             }
         },
         actions = {
-            IconButton(onClick = { /* Settings */ }) {
+            IconButton(onClick = {
+                navController.navigate(SettingRoute)
+            }) {
                 Icon(
-                    imageVector = if (isMainScreen) Icons.Rounded.Settings else Icons.Rounded.MoreVert,
+                    imageVector = Icons.Rounded.Settings,
                     contentDescription = "Menu"
                 )
             }

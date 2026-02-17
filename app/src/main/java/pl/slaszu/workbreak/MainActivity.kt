@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -24,16 +23,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import pl.slaszu.workbreak.domain.model.Setting
+import pl.slaszu.workbreak.domain.model.SettingRepository
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.DayEditRoute
 import pl.slaszu.workbreak.ui.ListRouting
+import pl.slaszu.workbreak.ui.SettingRoute
 import pl.slaszu.workbreak.ui.element.TopBarElement
 import pl.slaszu.workbreak.ui.screen.DayEditComposable
 import pl.slaszu.workbreak.ui.screen.ListOfDaysComposable
+import pl.slaszu.workbreak.ui.screen.SettingScreen
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
-import pl.slaszu.workbreak.ui.viewmodel.WorkWeekViewModel
+import pl.slaszu.workbreak.ui.viewmodel.AppViewModel
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,41 +50,27 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var schedulePermissionService: SchedulePermissionService
 
+    @Inject
+    lateinit var settingRepository: SettingRepository
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        if (!notificationPermissionService.hasPermission() || notificationPermissionService.shouldShowRationale(
-                this
-            )
-        ) {
-            this.startActivity(
-                Intent(this, NotificationRequestActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-            )
-            finish()
-        }
-
-        if (!schedulePermissionService.hasPermission()) {
-            this.startActivity(
-                Intent(this, ScheduleRequestActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-            )
-            finish()
-        }
+        startPermissionActivityIfNeeded()
 
         setContent {
 
-            val viewModel by viewModels<WorkWeekViewModel>()
+            val viewModel by viewModels<AppViewModel>()
 
             val snackbarHostState = remember { SnackbarHostState() }
             viewModel.registerSnackbarHostState(snackbarHostState)
 
             val workWeek =
                 viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek.create()).value
+
+            val setting = viewModel.setting.collectAsStateWithLifecycle(Setting()).value
 
             val navController = rememberNavController()
 
@@ -105,7 +96,10 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Top,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        NavHost(navController = navController, startDestination = ListRouting) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = ListRouting::class
+                        ) {
 
 
                             composable<ListRouting> {
@@ -113,8 +107,9 @@ class MainActivity : ComponentActivity() {
                                     workWeek = workWeek,
                                     onActivityChange = { workDay, active ->
                                         viewModel.setWorkDay(
-                                            workWeek,
-                                            workDay.copy(active = active)
+                                            workWeek = workWeek,
+                                            workDay = workDay.copy(active = active),
+                                            setting = setting
                                         )
                                     },
                                     onDayClick = { day ->
@@ -129,14 +124,70 @@ class MainActivity : ComponentActivity() {
                                 DayEditComposable(
                                     workDay = workWeek.getWorkDay(day.day),
                                     onSave = { workDay ->
-                                        viewModel.setWorkDay(workWeek, workDay)
+                                        viewModel.setWorkDay(
+                                            workWeek = workWeek,
+                                            workDay = workDay,
+                                            setting = setting
+                                        )
                                     }
                                 )
                             }
+
+
+                            composable<SettingRoute> {
+                                SettingScreen(
+                                    setting = setting
+                                )
+                            }
+
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun startPermissionActivityIfNeeded() {
+
+        val schedule = schedulePermissionService.hasPermission()
+        var notification = notificationPermissionService.hasPermission()
+        if (!notification) {
+            notification = notificationPermissionService.shouldShowRationale(this)
+        }
+
+        var setting = Setting()
+        if (!schedule || !notification) {
+            setting = runBlocking {
+                settingRepository.get().first()
+            }
+        }
+
+        if (!schedule && !setting.scheduleAlarmRequestDisplayed) {
+            runBlocking {
+                settingRepository.persist(
+                    setting.copy(scheduleAlarmRequestDisplayed = true)
+                )
+            }
+            this.startActivity(
+                Intent(this, ScheduleRequestActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+            )
+            finish()
+        }
+
+        if (!notification && !setting.notificationRequestDisplayed) {
+            runBlocking {
+                settingRepository.persist(
+                    setting.copy(notificationRequestDisplayed = true)
+                )
+            }
+            this.startActivity(
+                Intent(this, NotificationRequestActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+            )
+            finish()
         }
     }
 }

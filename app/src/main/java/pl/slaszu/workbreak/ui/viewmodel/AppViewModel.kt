@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.application.SetWorkDay
+import pl.slaszu.workbreak.domain.model.Setting
+import pl.slaszu.workbreak.domain.model.SettingRepository
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.model.WorkWeekRepository
@@ -17,8 +19,9 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 @HiltViewModel
-class WorkWeekViewModel @Inject constructor(
+class AppViewModel @Inject constructor(
     private val WorkWeekRepository: WorkWeekRepository,
+    private val settingRepository: SettingRepository,
     private val useCaseSetWorkDay: SetWorkDay,
     private val useCaseSetScheduleAlarm: SetScheduleAlarm
 ) : ViewModel() {
@@ -27,13 +30,22 @@ class WorkWeekViewModel @Inject constructor(
 
     private var snackbarHostState: SnackbarHostState? = null
 
+
+    val setting = this.settingRepository.get()
+
     // Expose screen UI state
     val workWeekFlow = this.WorkWeekRepository.get()
 
     init {
         viewModelScope.launch {
+
+            val setting = settingRepository.get().first()
+
             workWeekFlow.first {
-                updateScheduleIfNeeded(it)
+                updateScheduleIfNeeded(
+                    workWeek = it,
+                    setting = setting
+                )
                 true
             }
         }
@@ -43,20 +55,31 @@ class WorkWeekViewModel @Inject constructor(
         this.snackbarHostState = snackbarHostState
     }
 
-    fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay) {
+    fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay, setting: Setting) {
         val newWorkWeek = useCaseSetWorkDay.setWorkDay(workWeek, workDay)
         viewModelScope.launch {
             WorkWeekRepository.persist(
                 newWorkWeek
             )
             Log.d("myapp", "setWorkDay: $newWorkWeek")
-            updateScheduleIfNeeded(newWorkWeek)
+            updateScheduleIfNeeded(newWorkWeek, setting)
         }
     }
 
-    suspend fun updateScheduleIfNeeded(workWeek: WorkWeek) {
+    fun setSetting(setting: Setting) {
+        viewModelScope.launch {
+            settingRepository.persist(setting)
+        }
+    }
+
+    suspend fun updateScheduleIfNeeded(workWeek: WorkWeek, setting: Setting) {
         val now = LocalDateTime.now(ZoneId.systemDefault())
-        val alarmDateTime = useCaseSetScheduleAlarm.setNextBreakScheduleAlarm(workWeek, now)
+        val alarmDateTime = useCaseSetScheduleAlarm.setNextScheduleAlarm(
+            workWeek = workWeek,
+            dateTime = now,
+            startWorkAlarmFlag = setting.showWorkStartReminder,
+            endWorkAlarmFlag = setting.showWorkEndReminder
+        )
 
         Log.d("myapp", "updateScheduleIfNeeded alarmDateTime: $alarmDateTime")
 

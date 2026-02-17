@@ -34,7 +34,7 @@ class NotificationDisplayReceiver() : BroadcastReceiver() {
         val breakData = Json.decodeFromString<BreakScheduleAlarm>(serializedData)
         Log.d("myapp", "NotificationDisplayReceiver breakData: $breakData")
 
-        useCaseSetScheduleAlarm.setNextBreakScheduleAlarm(
+        useCaseSetScheduleAlarm.setNextScheduleAlarm(
             workWeek = breakData.workWeek,
             dateTime = LocalDateTime.now(ZoneId.systemDefault()).plusSeconds(5)
         )

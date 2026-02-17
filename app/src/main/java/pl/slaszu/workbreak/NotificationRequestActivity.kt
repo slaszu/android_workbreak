@@ -65,7 +65,14 @@ class NotificationRequestActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NotificationRequestScreen(
                         onAccept = { notificationPermissionService.launchRequest() },
-                        onDismiss = {},
+                        onDismiss = {
+                            this.startActivity(
+                                Intent(this, MainActivity::class.java).apply {
+                                    flags =
+                                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                }
+                            )
+                        },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

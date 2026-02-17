@@ -6,6 +6,7 @@ import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.WorkTypeEnum
 import pl.slaszu.workbreak.domain.findNearestBreakWorkPeriod
 import pl.slaszu.workbreak.domain.findWorkPeriod
+import pl.slaszu.workbreak.domain.model.Setting
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.schedule.BreakPeriod
 import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarm
@@ -18,9 +19,11 @@ class SetScheduleAlarm @Inject constructor(
     private val scheduleAlarmService: ScheduleAlarmService
 ) {
 
-    fun setNextBreakScheduleAlarm(
+    fun setNextScheduleAlarm(
         workWeek: WorkWeek,
-        dateTime: LocalDateTime
+        dateTime: LocalDateTime,
+        startWorkAlarmFlag: Boolean = true,
+        endWorkAlarmFlag: Boolean = true,
     ): LocalDateTime? {
         val workService = WorkService()
         val workPeriodList = workService.toWorkPeriodList(workWeek, dateTime)

@@ -7,6 +7,9 @@ import kotlinx.serialization.Serializable
 object ListRouting
 
 @Serializable
+object SettingRoute
+
+@Serializable
 data class DayEditRoute(
     val day: DayOfWeek
 )

@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AlarmOn
 import androidx.compose.material.icons.rounded.BatteryAlert
 import androidx.compose.material.icons.rounded.Timer
-import androidx.compose.material.icons.rounded.Update
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -69,7 +68,14 @@ class ScheduleRequestActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     AlarmPermissionScreen(
                         onOpenSettings = { schedulePermissionService.launchRequest() },
-                        onSkip = {},
+                        onSkip = {
+                            this.startActivity(
+                                Intent(this, MainActivity::class.java).apply {
+                                    flags =
+                                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                }
+                            )
+                        },
                         modifier = Modifier.padding(innerPadding),
                     )
                 }
@@ -77,6 +83,7 @@ class ScheduleRequestActivity : ComponentActivity() {
         }
     }
 }
+
 @Composable
 fun AlarmPermissionScreen(
     onOpenSettings: () -> Unit,

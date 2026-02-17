@@ -3,6 +3,7 @@ package pl.slaszu.workbreak.domain.notification
 import android.app.Notification
 import android.app.NotificationManager
 import android.content.Context
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
@@ -15,6 +16,12 @@ class NotificationService @Inject constructor(
     private val notificationPermissionService: NotificationPermissionService
 ) {
     fun displayNotification(breakScheduleAlarm: BreakScheduleAlarm) {
+
+        if (!notificationPermissionService.hasPermission()) {
+            Log.d("myapp", "NotificationService has no permission")
+            return
+        }
+
         val notificationManager: NotificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
