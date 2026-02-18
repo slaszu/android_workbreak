@@ -11,7 +11,6 @@ import jakarta.inject.Inject
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.receiver.NotificationDisplayReceiver
 import pl.slaszu.workbreak.domain.utils.toEpochMillis
@@ -83,13 +82,13 @@ class ScheduleAlarmService @Inject constructor(
 
 @Serializable
 data class BreakScheduleAlarm(
-    val period: BreakPeriod,
+    val period: BreakScheduleAlarmPeriod,
     val workWeek: WorkWeek,
     val type: BreakScheduleAlarmType
 )
 
 @Serializable
-data class BreakPeriod(
+data class BreakScheduleAlarmPeriod(
     val start: LocalDateTime,
     val end: LocalDateTime
 )

@@ -19,6 +19,7 @@ composeBom = "2026.01.00"
 appcompat = "1.7.1"
 material = "1.13.0"
 datastoreCore = "1.2.0"
+mockk = "1.14.9"
 navigationCompose = "2.9.6"
 animation = "1.10.3"
 
@@ -51,6 +52,7 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastoreCore" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

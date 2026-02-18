@@ -1,4 +1,4 @@
-package pl.slaszu.workbreak.domain
+package pl.slaszu.workbreak.domain.domain
 
 import kotlinx.datetime.DayOfWeek
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -6,6 +6,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.application.SetWorkDay
+import pl.slaszu.workbreak.domain.WorkService
+import pl.slaszu.workbreak.domain.findNearestBreakWorkPeriod
 import pl.slaszu.workbreak.domain.model.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.LocalDateTime

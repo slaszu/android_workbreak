@@ -1,9 +1,10 @@
-package pl.slaszu.workbreak.domain
+package pl.slaszu.workbreak.domain.domain
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.fake.WorkDayFactory
 import pl.slaszu.workbreak.domain.model.WorkDay
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
