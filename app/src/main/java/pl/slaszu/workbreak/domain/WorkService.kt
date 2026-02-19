@@ -11,18 +11,65 @@ import java.time.LocalDateTime
 
 class WorkService {
 
+    fun toWorkPeriodListWithFreeTime(
+        workWeek: WorkWeek,
+        dateTime: LocalDateTime
+    ): List<WorkPeriod> {
+        val workPeriodList = toWorkPeriodList(workWeek, dateTime)
+        if (workPeriodList.isEmpty()) {
+            return emptyList()
+        }
+
+        // get date for monday
+        val startDay = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
+
+        val list = mutableListOf<WorkPeriod>()
+
+        val first = workPeriodList.first()
+        val last = workPeriodList.last()
+        // from last to first
+        list.add(
+            WorkPeriod(
+                startLocaleDateTime = last.endLocaleDateTime.plusNanos(1),
+                endLocaleDateTime = first.startLocaleDateTime.minusNanos(1),
+                type = WorkTypeEnum.FREE_TIME
+            )
+        )
+
+        workPeriodList.forEachIndexed { index, workPeriod ->
+            list.add(workPeriod)
+            val next = workPeriodList.getOrNull(index + 1)
+            if (next == null) {
+                // no one left finish
+                return@forEachIndexed
+            }
+            if (workPeriod.endLocaleDateTime.plusNanos(1) == next.startLocaleDateTime) {
+                // next period is right after this one
+                return@forEachIndexed
+            }
+            // next period is NOT right after this one
+            // add free_time period
+            list.add(
+                WorkPeriod(
+                    startLocaleDateTime = workPeriod.endLocaleDateTime.plusNanos(1),
+                    endLocaleDateTime = next.startLocaleDateTime.minusNanos(1),
+                    type = WorkTypeEnum.FREE_TIME
+                )
+            )
+        }
+
+        return list.toList()
+    }
+
     fun toWorkPeriodList(workWeek: WorkWeek, dateTime: LocalDateTime): List<WorkPeriod> {
         val list = mutableListOf<WorkPeriod>()
 
         // get date for monday
-        var currentDay = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
+        val startDay = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
 
+        var currentDay = startDay
         Days.entries.forEach {
             val workDay = workWeek.getWorkDay(it.dayOfWeek)
-            if (!workDay.active) {
-                currentDay = getNextDay(currentDay)
-                return@forEach
-            }
 
             list.addAll(toWorkPeriodList(workDay, currentDay))
 
@@ -136,5 +183,5 @@ data class WorkPeriod(
 )
 
 enum class WorkTypeEnum {
-    WORK, BREAK
+    WORK, BREAK, FREE_TIME
 }

@@ -21,7 +21,7 @@ class ScheduleAlarmService @Inject constructor(
 ) {
 
     @SuppressLint("ScheduleExactAlarm")
-    fun scheduleBreakAlarm(breakData: BreakScheduleAlarm): LocalDateTime? {
+    fun scheduleBreakAlarm(breakData: AlarmData): LocalDateTime? {
         if (!schedulePermission.hasPermission()) {
             Log.d("myapp", "Schedule permission not granted")
             return null
@@ -29,7 +29,7 @@ class ScheduleAlarmService @Inject constructor(
 
         val pendingIntent = createPendingIntent(breakData)
 
-        val alarmDateTime = if (breakData.type == BreakScheduleAlarmType.START) {
+        val alarmDateTime = if (breakData.type == AlarmDataType.BREAK_START) {
             breakData.period.start
         } else {
             breakData.period.end
@@ -68,7 +68,7 @@ class ScheduleAlarmService @Inject constructor(
         Log.d("myapp", "Schedule all alarms CANCELLED")
     }
 
-    private fun createPendingIntent(item: BreakScheduleAlarm?): PendingIntent {
+    private fun createPendingIntent(item: AlarmData?): PendingIntent {
         return PendingIntent.getBroadcast(
             applicationContext,
             1,
@@ -81,18 +81,21 @@ class ScheduleAlarmService @Inject constructor(
 }
 
 @Serializable
-data class BreakScheduleAlarm(
-    val period: BreakScheduleAlarmPeriod,
+data class AlarmData(
+    val period: AlarmDataPeriod,
     val workWeek: WorkWeek,
-    val type: BreakScheduleAlarmType
+    val type: AlarmDataType
 )
 
 @Serializable
-data class BreakScheduleAlarmPeriod(
+data class AlarmDataPeriod(
     val start: LocalDateTime,
     val end: LocalDateTime
 )
 
-enum class BreakScheduleAlarmType {
-    START, END
+enum class AlarmDataType {
+    BREAK_START,
+    BREAK_END,
+    WORK_START,
+    WORK_END
 }

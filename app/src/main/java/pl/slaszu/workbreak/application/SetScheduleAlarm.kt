@@ -7,9 +7,9 @@ import pl.slaszu.workbreak.domain.WorkTypeEnum
 import pl.slaszu.workbreak.domain.findNearestBreakWorkPeriod
 import pl.slaszu.workbreak.domain.findWorkPeriod
 import pl.slaszu.workbreak.domain.model.WorkWeek
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarmPeriod
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarm
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarmType
+import pl.slaszu.workbreak.domain.schedule.AlarmDataPeriod
+import pl.slaszu.workbreak.domain.schedule.AlarmData
+import pl.slaszu.workbreak.domain.schedule.AlarmDataType
 import pl.slaszu.workbreak.domain.schedule.ScheduleAlarmService
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -27,14 +27,18 @@ class SetScheduleAlarm @Inject constructor(
         val workService = WorkService()
         val workPeriodList = workService.toWorkPeriodList(workWeek, dateTime)
 
+        // check if some period is durating now
+        val workPeriod = workPeriodList.findWorkPeriod(dateTime)
+
+
         // check if exist period for this datetime
         var breakPeriod = workPeriodList.findWorkPeriod(dateTime)
-        var type = BreakScheduleAlarmType.END
+        var type = AlarmDataType.BREAK_END
 
         // if not exists then find nearest break period
         if (breakPeriod == null || breakPeriod.type != WorkTypeEnum.BREAK) {
             breakPeriod = workPeriodList.findNearestBreakWorkPeriod(dateTime)
-            type = BreakScheduleAlarmType.START
+            type = AlarmDataType.BREAK_START
         }
 
         // if no break period then cancel all alarms
@@ -54,8 +58,8 @@ class SetScheduleAlarm @Inject constructor(
 
 
         val alarmDateTime = scheduleAlarmService.scheduleBreakAlarm(
-            breakData = BreakScheduleAlarm(
-                period = BreakScheduleAlarmPeriod(
+            breakData = AlarmData(
+                period = AlarmDataPeriod(
                     start = startDateTime.toKotlinLocalDateTime(),
                     end = endDateTime.toKotlinLocalDateTime()
                 ),

@@ -8,14 +8,14 @@ import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import pl.slaszu.workbreak.R
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarm
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarmType
+import pl.slaszu.workbreak.domain.schedule.AlarmData
+import pl.slaszu.workbreak.domain.schedule.AlarmDataType
 
 class NotificationService @Inject constructor(
     @param:ApplicationContext private val applicationContext: Context,
     private val notificationPermissionService: NotificationPermissionService
 ) {
-    fun displayNotification(breakScheduleAlarm: BreakScheduleAlarm) {
+    fun displayNotification(breakScheduleAlarm: AlarmData) {
 
         if (!notificationPermissionService.hasPermission()) {
             Log.d("myapp", "NotificationService has no permission")
@@ -28,15 +28,15 @@ class NotificationService @Inject constructor(
         notificationManager.notify(1, getNotification(breakScheduleAlarm))
     }
 
-    private fun getNotification(breakScheduleAlarm: BreakScheduleAlarm): Notification {
+    private fun getNotification(breakScheduleAlarm: AlarmData): Notification {
 
         var icon = R.drawable.baseline_timer_24
-        if (breakScheduleAlarm.type == BreakScheduleAlarmType.END) {
+        if (breakScheduleAlarm.type == AlarmDataType.BREAK_END) {
             icon = R.drawable.baseline_timer_off_24
         }
 
         var textTitle = "Break start"
-        if (breakScheduleAlarm.type == BreakScheduleAlarmType.END) {
+        if (breakScheduleAlarm.type == AlarmDataType.BREAK_END) {
             textTitle = "Break end"
         }
 

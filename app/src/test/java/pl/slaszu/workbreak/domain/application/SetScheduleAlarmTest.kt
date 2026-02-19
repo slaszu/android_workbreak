@@ -6,15 +6,14 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.verify
 import kotlinx.datetime.toKotlinLocalDateTime
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.domain.model.WorkWeek
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarm
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarmPeriod
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarmType
+import pl.slaszu.workbreak.domain.schedule.AlarmData
+import pl.slaszu.workbreak.domain.schedule.AlarmDataPeriod
+import pl.slaszu.workbreak.domain.schedule.AlarmDataType
 import pl.slaszu.workbreak.domain.schedule.ScheduleAlarmService
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.DayOfWeek
@@ -67,13 +66,81 @@ class SetScheduleAlarmTest {
         // assert
         verify {
             scheduleAlarmService.scheduleBreakAlarm(
-                BreakScheduleAlarm(
+                AlarmData(
                     workWeek = workWeekActive,
-                    period = BreakScheduleAlarmPeriod(
+                    period = AlarmDataPeriod(
                         start = thursday.plusHours(8).plusMinutes(45).toKotlinLocalDateTime(),
                         end = thursday.plusHours(9).minusNanos(1).toKotlinLocalDateTime()
                     ),
-                    type = BreakScheduleAlarmType.START
+                    type = AlarmDataType.BREAK_START
+                )
+            )
+        }
+    }
+
+    @Test
+    fun firstBreakEnd() {
+        // arrange
+        val workWeekInactive = WorkWeek.create()
+        val workWeekActive = workWeekInactive.copy(
+            workDays = workWeekInactive.workDays.map {
+                it.copy(active = true)
+            }
+        )
+        val thursday = getPrevDayOfWeek(LocalDateTime.now(), DayOfWeek.THURSDAY)
+        every { scheduleAlarmService.scheduleBreakAlarm(any()) } returns thursday.toKotlinLocalDateTime()
+
+        // act
+        val res = setScheduleAlarm.setNextScheduleAlarm(
+            workWeek = workWeekActive,
+            dateTime = thursday.plusHours(8).plusMinutes(45)
+        )
+
+        // assert
+        verify {
+            scheduleAlarmService.scheduleBreakAlarm(
+                AlarmData(
+                    workWeek = workWeekActive,
+                    period = AlarmDataPeriod(
+                        start = thursday.plusHours(8).plusMinutes(45).toKotlinLocalDateTime(),
+                        end = thursday.plusHours(9).minusNanos(1).toKotlinLocalDateTime()
+                    ),
+                    type = AlarmDataType.BREAK_END
+                )
+            )
+        }
+    }
+
+    //@Test
+    fun firstWorkBegin() {
+        // arrange
+        val workWeekInactive = WorkWeek.create()
+        val workWeekActive = workWeekInactive.copy(
+            workDays = workWeekInactive.workDays.map {
+                it.copy(active = true)
+            }
+        )
+        val thursday = getPrevDayOfWeek(LocalDateTime.now(), DayOfWeek.THURSDAY)
+        every { scheduleAlarmService.scheduleBreakAlarm(any()) } returns thursday.toKotlinLocalDateTime()
+
+        // act
+        val res = setScheduleAlarm.setNextScheduleAlarm(
+            workWeek = workWeekActive,
+            dateTime = thursday,
+            startWorkAlarmFlag = true
+        )
+
+        // assert
+        verify {
+            scheduleAlarmService.scheduleBreakAlarm(
+                AlarmData(
+                    workWeek = workWeekActive,
+                    period = AlarmDataPeriod(
+                        start = thursday.plusHours(8).toKotlinLocalDateTime(),
+                        end = thursday.plusHours(8).plusMinutes(45).minusNanos(1)
+                            .toKotlinLocalDateTime()
+                    ),
+                    type = AlarmDataType.WORK_START
                 )
             )
         }

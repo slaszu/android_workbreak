@@ -8,7 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.domain.notification.NotificationService
-import pl.slaszu.workbreak.domain.schedule.BreakScheduleAlarm
+import pl.slaszu.workbreak.domain.schedule.AlarmData
 import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.inject.Inject
@@ -31,7 +31,7 @@ class NotificationDisplayReceiver() : BroadcastReceiver() {
         val serializedData = intent.getStringExtra("BREAK")
         if (serializedData == null) return
 
-        val breakData = Json.decodeFromString<BreakScheduleAlarm>(serializedData)
+        val breakData = Json.decodeFromString<AlarmData>(serializedData)
         Log.d("myapp", "NotificationDisplayReceiver breakData: $breakData")
 
         useCaseSetScheduleAlarm.setNextScheduleAlarm(
