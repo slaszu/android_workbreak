@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import pl.slaszu.workbreak.domain.WorkPeriod
 import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.WorkTypeEnum
 import pl.slaszu.workbreak.domain.findWorkPeriod
@@ -19,14 +20,14 @@ class WorkServiceFreeTimeTest {
     fun check(
         workWeek: WorkWeek,
         datetimeModifier: (LocalDateTime) -> LocalDateTime,
-        expectedType: WorkTypeEnum?,
+        expectedWorkPeriod: (LocalDateTime) -> WorkPeriod?,
     ) {
 
         val workService = WorkService()
 
         val thursday = getPrevDayOfWeek(LocalDateTime.now(), DayOfWeek.THURSDAY)
 
-        val workPeriodList = workService.toWorkPeriodList(
+        val workPeriodList = workService.toWorkPeriodListWithFreeTime(
             workWeek = workWeek,
             dateTime = thursday
         )
@@ -34,11 +35,13 @@ class WorkServiceFreeTimeTest {
         println(workPeriodList)
 
         val lookingForDateTime = datetimeModifier(thursday)
+        val expectedWorkPeriod = expectedWorkPeriod(thursday)
 
         println(lookingForDateTime)
 
         val workPeriod = workPeriodList.findWorkPeriod(lookingForDateTime)
-        assertEquals(expectedType, workPeriod?.type)
+
+        assertEquals(expectedWorkPeriod, workPeriod)
     }
 
     companion object {
@@ -52,44 +55,70 @@ class WorkServiceFreeTimeTest {
             )
             return Stream.of(
                 Arguments.of(
-                    workWeekActive,
-                    { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },
-                    null,
-                ),
-                Arguments.of(
                     workWeekInactive,
                     { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },
-                    null,
-                ),
-                Arguments.of(
-                    workWeekActive,
-                    { thursday: LocalDateTime -> thursday.plusHours(8) },
-                    WorkTypeEnum.WORK,
+                    { thursday: LocalDateTime -> null },
                 ),
                 Arguments.of(
                     workWeekInactive,
                     { thursday: LocalDateTime -> thursday.plusHours(8) },
-                    null,
+                    { thursday: LocalDateTime -> null },
                 ),
                 Arguments.of(
                     workWeekActive,
-                    { thursday: LocalDateTime -> thursday.minusHours(24).plusHours(8) },
-                    WorkTypeEnum.WORK,
-                ),
-                Arguments.of(
-                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },
                     { thursday: LocalDateTime ->
-                        thursday.minusHours(24).plusHours(8).plusMinutes(44)
-                    },
-                    WorkTypeEnum.WORK,
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.minusDays(1).plusHours(16),
+                            endLocaleDateTime = thursday.plusHours(8).minusNanos(1),
+                            type = WorkTypeEnum.FREE_TIME
+                        )
+                    }
                 ),
                 Arguments.of(
                     workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(8) },
                     { thursday: LocalDateTime ->
-                        thursday.minusHours(24).plusHours(8).plusMinutes(45)
-                    },
-                    WorkTypeEnum.BREAK,
-                )
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.plusHours(8),
+                            endLocaleDateTime = thursday.plusHours(8).plusMinutes(45).minusNanos(1),
+                            type = WorkTypeEnum.WORK
+                        )
+                    }
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(8).plusMinutes(45) },
+                    { thursday: LocalDateTime ->
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.plusHours(8).plusMinutes(45),
+                            endLocaleDateTime = thursday.plusHours(9).minusNanos(1),
+                            type = WorkTypeEnum.BREAK
+                        )
+                    }
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(15).plusMinutes(55) },
+                    { thursday: LocalDateTime ->
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.plusHours(15).plusMinutes(45),
+                            endLocaleDateTime = thursday.plusHours(16).minusNanos(1),
+                            type = WorkTypeEnum.BREAK
+                        )
+                    }
+                ),
+                Arguments.of(
+                    workWeekActive,
+                    { thursday: LocalDateTime -> thursday.plusHours(16) },
+                    { thursday: LocalDateTime ->
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.plusHours(16),
+                            endLocaleDateTime = thursday.plusDays(1).plusHours(8).minusNanos(1),
+                            type = WorkTypeEnum.FREE_TIME
+                        )
+                    }
+                ),
             )
         }
     }
