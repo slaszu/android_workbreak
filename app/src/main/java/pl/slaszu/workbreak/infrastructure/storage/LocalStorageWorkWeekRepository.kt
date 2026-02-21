@@ -2,10 +2,9 @@ package pl.slaszu.workbreak.infrastructure.storage
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import pl.slaszu.localstorage.LocalStorage
-import pl.slaszu.workbreak.domain.model.WorkWeek
-import pl.slaszu.workbreak.domain.model.WorkWeekRepository
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
+import pl.slaszu.workbreak.domain.repository.WorkWeekRepository
 
 class LocalStorageWorkWeekRepository(
     private val localStorage: LocalStorage<WorkWeek>

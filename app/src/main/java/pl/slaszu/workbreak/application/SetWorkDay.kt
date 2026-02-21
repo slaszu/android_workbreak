@@ -1,8 +1,8 @@
 package pl.slaszu.workbreak.application
 
 import jakarta.inject.Inject
-import pl.slaszu.workbreak.domain.model.WorkDay
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.work.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 
 class SetWorkDay @Inject constructor() {
     fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay): WorkWeek {

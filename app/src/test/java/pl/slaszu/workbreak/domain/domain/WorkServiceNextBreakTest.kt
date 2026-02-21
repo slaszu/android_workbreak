@@ -6,9 +6,10 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.application.SetWorkDay
+import pl.slaszu.workbreak.domain.WorkPeriodType
 import pl.slaszu.workbreak.domain.WorkService
-import pl.slaszu.workbreak.domain.findNearestBreakWorkPeriod
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.findNextWorkPeriod
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.LocalDateTime
 import java.util.stream.Stream
@@ -40,7 +41,7 @@ class WorkServiceNextBreakTest {
 
         println(lookingForDateTime)
 
-        val workPeriod = workPeriodList.findNearestBreakWorkPeriod(lookingForDateTime)
+        val workPeriod = workPeriodList.findNextWorkPeriod(lookingForDateTime, WorkPeriodType.BREAK)
         assertEquals(startLocalDateTimeModifier(thursday), workPeriod?.startLocaleDateTime)
     }
 

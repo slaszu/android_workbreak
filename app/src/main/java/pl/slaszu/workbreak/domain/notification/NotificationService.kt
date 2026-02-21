@@ -7,15 +7,15 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
-import pl.slaszu.workbreak.R
-import pl.slaszu.workbreak.domain.schedule.AlarmData
-import pl.slaszu.workbreak.domain.schedule.AlarmDataType
+import pl.slaszu.workbreak.domain.model.alarm.Alarm
+import pl.slaszu.workbreak.domain.presentation.AlarmPresentationFactory
 
 class NotificationService @Inject constructor(
     @param:ApplicationContext private val applicationContext: Context,
-    private val notificationPermissionService: NotificationPermissionService
+    private val notificationPermissionService: NotificationPermissionService,
+    private val alarmPresentationFactory: AlarmPresentationFactory
 ) {
-    fun displayNotification(breakScheduleAlarm: AlarmData) {
+    fun displayNotification(alarm: Alarm) {
 
         if (!notificationPermissionService.hasPermission()) {
             Log.d("myapp", "NotificationService has no permission")
@@ -25,31 +25,20 @@ class NotificationService @Inject constructor(
         val notificationManager: NotificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        notificationManager.notify(1, getNotification(breakScheduleAlarm))
+        notificationManager.notify(1, getNotification(alarm))
     }
 
-    private fun getNotification(breakScheduleAlarm: AlarmData): Notification {
+    private fun getNotification(alarm: Alarm): Notification {
 
-        var icon = R.drawable.baseline_timer_24
-        if (breakScheduleAlarm.type == AlarmDataType.BREAK_END) {
-            icon = R.drawable.baseline_timer_off_24
-        }
-
-        var textTitle = "Break start"
-        if (breakScheduleAlarm.type == AlarmDataType.BREAK_END) {
-            textTitle = "Break end"
-        }
-
-        var textContent = "6th break at thursday"
-
+        val alarmPresentation = alarmPresentationFactory.create(alarm)
 
         return NotificationCompat.Builder(
             applicationContext,
             notificationPermissionService.channelId()
         )
-            .setSmallIcon(icon)
-            .setContentTitle(textTitle)
-            .setContentText(textContent)
+            .setSmallIcon(alarmPresentation.icon)
+            .setContentTitle(alarmPresentation.header)
+            .setContentText(alarmPresentation.description)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
     }

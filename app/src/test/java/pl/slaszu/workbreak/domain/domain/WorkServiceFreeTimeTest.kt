@@ -6,9 +6,9 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.domain.WorkPeriod
 import pl.slaszu.workbreak.domain.WorkService
-import pl.slaszu.workbreak.domain.WorkTypeEnum
+import pl.slaszu.workbreak.domain.WorkPeriodType
 import pl.slaszu.workbreak.domain.findWorkPeriod
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.DayOfWeek
 import java.time.LocalDateTime
@@ -71,7 +71,7 @@ class WorkServiceFreeTimeTest {
                         WorkPeriod(
                             startLocaleDateTime = thursday.minusDays(1).plusHours(16),
                             endLocaleDateTime = thursday.plusHours(8).minusNanos(1),
-                            type = WorkTypeEnum.FREE_TIME
+                            type = WorkPeriodType.FREE_TIME
                         )
                     }
                 ),
@@ -82,7 +82,7 @@ class WorkServiceFreeTimeTest {
                         WorkPeriod(
                             startLocaleDateTime = thursday.plusHours(8),
                             endLocaleDateTime = thursday.plusHours(8).plusMinutes(45).minusNanos(1),
-                            type = WorkTypeEnum.WORK
+                            type = WorkPeriodType.WORK
                         )
                     }
                 ),
@@ -93,7 +93,7 @@ class WorkServiceFreeTimeTest {
                         WorkPeriod(
                             startLocaleDateTime = thursday.plusHours(8).plusMinutes(45),
                             endLocaleDateTime = thursday.plusHours(9).minusNanos(1),
-                            type = WorkTypeEnum.BREAK
+                            type = WorkPeriodType.BREAK
                         )
                     }
                 ),
@@ -104,7 +104,7 @@ class WorkServiceFreeTimeTest {
                         WorkPeriod(
                             startLocaleDateTime = thursday.plusHours(15).plusMinutes(45),
                             endLocaleDateTime = thursday.plusHours(16).minusNanos(1),
-                            type = WorkTypeEnum.BREAK
+                            type = WorkPeriodType.BREAK
                         )
                     }
                 ),
@@ -115,7 +115,7 @@ class WorkServiceFreeTimeTest {
                         WorkPeriod(
                             startLocaleDateTime = thursday.plusHours(16),
                             endLocaleDateTime = thursday.plusDays(1).plusHours(8).minusNanos(1),
-                            type = WorkTypeEnum.FREE_TIME
+                            type = WorkPeriodType.FREE_TIME
                         )
                     }
                 ),

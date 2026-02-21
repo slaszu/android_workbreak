@@ -78,10 +78,10 @@ import androidx.core.text.isDigitsOnly
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import pl.slaszu.workbreak.domain.Days
-import pl.slaszu.workbreak.domain.model.WorkDay
-import pl.slaszu.workbreak.domain.model.getBreakDurationMinutes
-import pl.slaszu.workbreak.domain.model.getBreaksQuantity
-import pl.slaszu.workbreak.domain.model.getWorkDurationMinutes
+import pl.slaszu.workbreak.domain.model.work.WorkDay
+import pl.slaszu.workbreak.domain.model.work.getBreakDurationMinutes
+import pl.slaszu.workbreak.domain.model.work.getBreaksQuantity
+import pl.slaszu.workbreak.domain.model.work.getWorkDurationMinutes
 import pl.slaszu.workbreak.domain.utils.asMinutesToHoursAndMinutes
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 

@@ -1,8 +1,8 @@
 package pl.slaszu.workbreak.domain
 
 import kotlinx.datetime.toKotlinDayOfWeek
-import pl.slaszu.workbreak.domain.model.WorkDay
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.work.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getNextDay
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import pl.slaszu.workbreak.domain.utils.resetDay
@@ -32,7 +32,7 @@ class WorkService {
             WorkPeriod(
                 startLocaleDateTime = last.endLocaleDateTime.plusNanos(1),
                 endLocaleDateTime = first.startLocaleDateTime.minusNanos(1),
-                type = WorkTypeEnum.FREE_TIME
+                type = WorkPeriodType.FREE_TIME
             )
         )
 
@@ -53,7 +53,7 @@ class WorkService {
                 WorkPeriod(
                     startLocaleDateTime = workPeriod.endLocaleDateTime.plusNanos(1),
                     endLocaleDateTime = next.startLocaleDateTime.minusNanos(1),
-                    type = WorkTypeEnum.FREE_TIME
+                    type = WorkPeriodType.FREE_TIME
                 )
             )
         }
@@ -118,7 +118,7 @@ class WorkService {
                 WorkPeriod(
                     startLocaleDateTime = startDate,
                     endLocaleDateTime = nextDate.minusNanos(1),
-                    type = WorkTypeEnum.WORK
+                    type = WorkPeriodType.WORK
                 )
             )
 
@@ -140,7 +140,7 @@ class WorkService {
                 WorkPeriod(
                     startLocaleDateTime = startDate,
                     endLocaleDateTime = nextDate.minusNanos(1),
-                    type = WorkTypeEnum.BREAK
+                    type = WorkPeriodType.BREAK
                 )
             )
 
@@ -159,29 +159,29 @@ fun List<WorkPeriod>.findWorkPeriod(dateTime: LocalDateTime): WorkPeriod? {
     return this.find { it.startLocaleDateTime <= dateTime && it.endLocaleDateTime >= dateTime }
 }
 
-fun List<WorkPeriod>.findNearestBreakWorkPeriod(dateTime: LocalDateTime): WorkPeriod? {
+fun List<WorkPeriod>.findNextWorkPeriod(dateTime: LocalDateTime, type: WorkPeriodType): WorkPeriod? {
 
     if (this.isEmpty()) {
         return null
     }
 
-    this.find { it.startLocaleDateTime > dateTime && it.type == WorkTypeEnum.BREAK }?.let {
+    this.find { it.startLocaleDateTime > dateTime && it.type == type }?.let {
         return it
     }
 
     // rewind to the start of the week
     val rewindDateTime = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
 
-    return this.find { it.startLocaleDateTime > rewindDateTime && it.type == WorkTypeEnum.BREAK }
+    return this.find { it.startLocaleDateTime > rewindDateTime && it.type == type }
 }
 
 
 data class WorkPeriod(
     val startLocaleDateTime: LocalDateTime,
     val endLocaleDateTime: LocalDateTime,
-    val type: WorkTypeEnum
+    val type: WorkPeriodType
 )
 
-enum class WorkTypeEnum {
+enum class WorkPeriodType {
     WORK, BREAK, FREE_TIME
 }

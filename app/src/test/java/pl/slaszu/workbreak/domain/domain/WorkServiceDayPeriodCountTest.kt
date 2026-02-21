@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.fake.WorkDayFactory
-import pl.slaszu.workbreak.domain.model.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkDay
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.LocalDateTime
 import java.util.stream.Stream

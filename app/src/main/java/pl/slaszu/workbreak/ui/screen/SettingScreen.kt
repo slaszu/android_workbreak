@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import pl.slaszu.workbreak.domain.model.Setting
+import pl.slaszu.workbreak.domain.model.setting.Setting
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
 @Composable

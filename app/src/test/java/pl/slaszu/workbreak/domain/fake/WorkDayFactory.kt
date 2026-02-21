@@ -1,8 +1,8 @@
 package pl.slaszu.workbreak.domain.fake
 
 import kotlinx.datetime.DayOfWeek
-import pl.slaszu.workbreak.domain.model.WorkDay
-import pl.slaszu.workbreak.domain.model.WorkHours
+import pl.slaszu.workbreak.domain.model.work.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkHours
 
 class WorkDayFactory {
     companion object {

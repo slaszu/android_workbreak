@@ -43,7 +43,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import pl.slaszu.workbreak.domain.Days
-import pl.slaszu.workbreak.domain.model.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkDay
 import pl.slaszu.workbreak.ui.ListRouting
 import pl.slaszu.workbreak.ui.SettingRoute
 import pl.slaszu.workbreak.ui.screen.DayEditComposable

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import pl.slaszu.workbreak.application.SetScheduleAlarm
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.schedule.AlarmData
 import pl.slaszu.workbreak.domain.schedule.AlarmDataPeriod
 import pl.slaszu.workbreak.domain.schedule.AlarmDataType

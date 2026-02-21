@@ -5,9 +5,9 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.domain.WorkService
-import pl.slaszu.workbreak.domain.WorkTypeEnum
+import pl.slaszu.workbreak.domain.WorkPeriodType
 import pl.slaszu.workbreak.domain.findWorkPeriod
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.LocalDateTime
 import java.util.stream.Stream
@@ -21,7 +21,7 @@ class WorkServiceWeekTest {
     fun check(
         workWeek: WorkWeek,
         datetimeModifier: (LocalDateTime) -> LocalDateTime,
-        expectedType: WorkTypeEnum?,
+        expectedType: WorkPeriodType?,
     ) {
 
         val workService = WorkService()
@@ -66,7 +66,7 @@ class WorkServiceWeekTest {
                 Arguments.of(
                     workWeekActive,
                     { thursday: LocalDateTime -> thursday.plusHours(8) },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                 ),
                 Arguments.of(
                     workWeekInactive,
@@ -76,21 +76,21 @@ class WorkServiceWeekTest {
                 Arguments.of(
                     workWeekActive,
                     { thursday: LocalDateTime -> thursday.minusHours(24).plusHours(8) },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                 ),
                 Arguments.of(
                     workWeekActive,
                     { thursday: LocalDateTime ->
                         thursday.minusHours(24).plusHours(8).plusMinutes(44)
                     },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                 ),
                 Arguments.of(
                     workWeekActive,
                     { thursday: LocalDateTime ->
                         thursday.minusHours(24).plusHours(8).plusMinutes(45)
                     },
-                    WorkTypeEnum.BREAK,
+                    WorkPeriodType.BREAK,
                 )
             )
         }

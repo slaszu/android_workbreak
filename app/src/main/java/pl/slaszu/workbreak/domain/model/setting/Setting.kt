@@ -1,4 +1,4 @@
-package pl.slaszu.workbreak.domain.model
+package pl.slaszu.workbreak.domain.model.setting
 
 import kotlinx.serialization.Serializable
 

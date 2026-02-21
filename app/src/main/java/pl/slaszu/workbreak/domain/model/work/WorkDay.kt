@@ -1,4 +1,4 @@
-package pl.slaszu.workbreak.domain.model
+package pl.slaszu.workbreak.domain.model.work
 
 import kotlinx.datetime.DayOfWeek
 import kotlinx.serialization.Serializable

@@ -2,8 +2,8 @@ package pl.slaszu.workbreak.infrastructure.storage
 
 import kotlinx.coroutines.flow.Flow
 import pl.slaszu.localstorage.LocalStorage
-import pl.slaszu.workbreak.domain.model.Setting
-import pl.slaszu.workbreak.domain.model.SettingRepository
+import pl.slaszu.workbreak.domain.model.setting.Setting
+import pl.slaszu.workbreak.domain.repository.SettingRepository
 
 class LocalStorageSettingRepository(
     private val localStorage: LocalStorage<Setting>

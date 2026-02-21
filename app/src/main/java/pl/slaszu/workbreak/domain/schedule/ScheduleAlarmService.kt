@@ -8,10 +8,8 @@ import android.content.Intent
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
-import kotlinx.datetime.LocalDateTime
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.alarm.Alarm
 import pl.slaszu.workbreak.domain.receiver.NotificationDisplayReceiver
 import pl.slaszu.workbreak.domain.utils.toEpochMillis
 
@@ -21,19 +19,13 @@ class ScheduleAlarmService @Inject constructor(
 ) {
 
     @SuppressLint("ScheduleExactAlarm")
-    fun scheduleBreakAlarm(breakData: AlarmData): LocalDateTime? {
+    fun scheduleBreakAlarm(alarm: Alarm) {
         if (!schedulePermission.hasPermission()) {
             Log.d("myapp", "Schedule permission not granted")
-            return null
+            return
         }
 
-        val pendingIntent = createPendingIntent(breakData)
-
-        val alarmDateTime = if (breakData.type == AlarmDataType.BREAK_START) {
-            breakData.period.start
-        } else {
-            breakData.period.end
-        }
+        val pendingIntent = createPendingIntent(alarm)
 
         val alarmManager =
             applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -42,14 +34,11 @@ class ScheduleAlarmService @Inject constructor(
 
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
-            alarmDateTime.toEpochMillis(),
+            alarm.alarmDateTime.toEpochMillis(),
             pendingIntent
         )
 
-        Log.d("myapp", "Schedule alarmDateTime = $alarmDateTime")
-        Log.d("myapp", "Schedule alarm SET: $breakData")
-
-        return alarmDateTime
+        Log.d("myapp", "Schedule alarm SET: $alarm")
     }
 
     fun cancelAllAlarms() {
@@ -64,38 +53,18 @@ class ScheduleAlarmService @Inject constructor(
             applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         alarmManager.cancel(pendingIntent)
-        
+
         Log.d("myapp", "Schedule all alarms CANCELLED")
     }
 
-    private fun createPendingIntent(item: AlarmData?): PendingIntent {
+    private fun createPendingIntent(item: Alarm?): PendingIntent {
         return PendingIntent.getBroadcast(
             applicationContext,
             1,
             Intent(applicationContext, NotificationDisplayReceiver::class.java).apply {
-                putExtra("BREAK", Json.encodeToString(item))
+                putExtra("ALARM", Json.encodeToString(item))
             },
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
-}
-
-@Serializable
-data class AlarmData(
-    val period: AlarmDataPeriod,
-    val workWeek: WorkWeek,
-    val type: AlarmDataType
-)
-
-@Serializable
-data class AlarmDataPeriod(
-    val start: LocalDateTime,
-    val end: LocalDateTime
-)
-
-enum class AlarmDataType {
-    BREAK_START,
-    BREAK_END,
-    WORK_START,
-    WORK_END
 }

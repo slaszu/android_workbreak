@@ -5,10 +5,10 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.domain.WorkService
-import pl.slaszu.workbreak.domain.WorkTypeEnum
+import pl.slaszu.workbreak.domain.WorkPeriodType
 import pl.slaszu.workbreak.domain.fake.WorkDayFactory
 import pl.slaszu.workbreak.domain.findWorkPeriod
-import pl.slaszu.workbreak.domain.model.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkDay
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import java.time.LocalDateTime
 import java.util.stream.Stream
@@ -22,7 +22,7 @@ class WorkServiceDayDatetimeTest {
     fun check(
         workDay: WorkDay,
         datetimeModifier: (LocalDateTime) -> LocalDateTime,
-        expectedType: WorkTypeEnum?,
+        expectedType: WorkPeriodType?,
         inWhichPeriod: Int?
     ) {
 
@@ -67,37 +67,37 @@ class WorkServiceDayDatetimeTest {
                 Arguments.of(
                     day,
                     { dateTime: LocalDateTime -> dateTime.plusHours(8) },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                     1
                 ),
                 Arguments.of(
                     day,
                     { dateTime: LocalDateTime -> dateTime.plusHours(8).plusMinutes(55) },
-                    WorkTypeEnum.BREAK,
+                    WorkPeriodType.BREAK,
                     2
                 ),
                 Arguments.of(
                     day,
                     { dateTime: LocalDateTime -> dateTime.plusHours(8).plusMinutes(59) },
-                    WorkTypeEnum.BREAK,
+                    WorkPeriodType.BREAK,
                     2
                 ),
                 Arguments.of(
                     day,
                     { dateTime: LocalDateTime -> dateTime.plusHours(9) },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                     3
                 ),
                 Arguments.of(
                     day,
                     { dateTime: LocalDateTime -> dateTime.plusHours(9).plusMinutes(3) },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                     3
                 ),
                 Arguments.of(
                     day,
                     { dateTime: LocalDateTime -> dateTime.plusHours(15).plusMinutes(59) },
-                    WorkTypeEnum.BREAK,
+                    WorkPeriodType.BREAK,
                     16
                 ),
                 Arguments.of(
@@ -110,13 +110,13 @@ class WorkServiceDayDatetimeTest {
                 Arguments.of(
                     day2,
                     { dateTime: LocalDateTime -> dateTime.plusHours(18) },
-                    WorkTypeEnum.WORK,
+                    WorkPeriodType.WORK,
                     1
                 ),
                 Arguments.of(
                     day2,
                     { dateTime: LocalDateTime -> dateTime.plusHours(25).plusMinutes(59) },
-                    WorkTypeEnum.BREAK,
+                    WorkPeriodType.BREAK,
                     16
                 ),
                 Arguments.of(

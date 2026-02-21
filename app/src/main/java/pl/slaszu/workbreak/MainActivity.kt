@@ -25,9 +25,9 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import pl.slaszu.workbreak.domain.model.Setting
-import pl.slaszu.workbreak.domain.model.SettingRepository
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.setting.Setting
+import pl.slaszu.workbreak.domain.repository.SettingRepository
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
 import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.DayEditRoute

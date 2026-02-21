@@ -1,15 +1,14 @@
 package pl.slaszu.workbreak.application
 
-import kotlinx.datetime.toJavaLocalDateTime
+import android.util.Log
 import kotlinx.datetime.toKotlinLocalDateTime
+import pl.slaszu.workbreak.domain.WorkPeriod
+import pl.slaszu.workbreak.domain.WorkPeriodType
 import pl.slaszu.workbreak.domain.WorkService
-import pl.slaszu.workbreak.domain.WorkTypeEnum
-import pl.slaszu.workbreak.domain.findNearestBreakWorkPeriod
+import pl.slaszu.workbreak.domain.findNextWorkPeriod
 import pl.slaszu.workbreak.domain.findWorkPeriod
-import pl.slaszu.workbreak.domain.model.WorkWeek
-import pl.slaszu.workbreak.domain.schedule.AlarmDataPeriod
-import pl.slaszu.workbreak.domain.schedule.AlarmData
-import pl.slaszu.workbreak.domain.schedule.AlarmDataType
+import pl.slaszu.workbreak.domain.model.alarm.Alarm
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.schedule.ScheduleAlarmService
 import java.time.LocalDateTime
 import javax.inject.Inject
@@ -23,51 +22,113 @@ class SetScheduleAlarm @Inject constructor(
         dateTime: LocalDateTime,
         startWorkAlarmFlag: Boolean = false,
         endWorkAlarmFlag: Boolean = false,
-    ): LocalDateTime? {
+    ): Alarm? {
         val workService = WorkService()
-        val workPeriodList = workService.toWorkPeriodList(workWeek, dateTime)
+        val workPeriodList = workService.toWorkPeriodListWithFreeTime(workWeek, dateTime)
+
+        Log.d("myapp", "setNextScheduleAlarm workPeriodList: $workPeriodList")
 
         // check if some period is durating now
-        val workPeriod = workPeriodList.findWorkPeriod(dateTime)
-
-
-        // check if exist period for this datetime
-        var breakPeriod = workPeriodList.findWorkPeriod(dateTime)
-        var type = AlarmDataType.BREAK_END
-
-        // if not exists then find nearest break period
-        if (breakPeriod == null || breakPeriod.type != WorkTypeEnum.BREAK) {
-            breakPeriod = workPeriodList.findNearestBreakWorkPeriod(dateTime)
-            type = AlarmDataType.BREAK_START
-        }
-
-        // if no break period then cancel all alarms
-        if (breakPeriod == null) {
+        if (workPeriodList.isEmpty()) {
             scheduleAlarmService.cancelAllAlarms()
             return null
         }
 
-        // calculate real start and end datetime
-        var startDateTime = breakPeriod.startLocaleDateTime
-        var endDateTime = breakPeriod.endLocaleDateTime
+        val workPeriod = workPeriodList.findWorkPeriod(dateTime)
+        val nextWorkPeriod =
+            workPeriodList.findWorkPeriod(workPeriod!!.endLocaleDateTime.plusNanos(1))
 
-        if (startDateTime < dateTime && endDateTime < dateTime) {
-            startDateTime = startDateTime.plusWeeks(1)
-            endDateTime = endDateTime.plusWeeks(1)
-        }
-
-
-        val alarmDateTime = scheduleAlarmService.scheduleBreakAlarm(
-            breakData = AlarmData(
-                period = AlarmDataPeriod(
-                    start = startDateTime.toKotlinLocalDateTime(),
-                    end = endDateTime.toKotlinLocalDateTime()
-                ),
-                workWeek = workWeek,
-                type = type
-            )
+        val nextBreakPeriod = workPeriodList.findNextWorkPeriod(
+            dateTime = dateTime,
+            type = WorkPeriodType.BREAK
         )
 
-        return alarmDateTime?.toJavaLocalDateTime()
+        val alarm = createAlarmData(
+            workPeriod = workPeriod,
+            nextWorkPeriod = nextWorkPeriod!!,
+            nextBreakPeriod = nextBreakPeriod,
+            startWorkAlarmFlag = startWorkAlarmFlag,
+            endWorkAlarmFlag = endWorkAlarmFlag
+        )
+
+        if (alarm == null) {
+            scheduleAlarmService.cancelAllAlarms()
+            return null
+        }
+
+        scheduleAlarmService.scheduleBreakAlarm(alarm)
+
+        return alarm
+    }
+
+    private fun createAlarmData(
+        workPeriod: WorkPeriod,
+        nextWorkPeriod: WorkPeriod,
+        nextBreakPeriod: WorkPeriod?,
+        startWorkAlarmFlag: Boolean,
+        endWorkAlarmFlag: Boolean
+    ): Alarm? {
+        when (workPeriod.type) {
+            WorkPeriodType.WORK -> {
+                if (nextWorkPeriod.type == WorkPeriodType.FREE_TIME) {
+                    if (endWorkAlarmFlag) {
+                        // set alert for AlarmDataType.WORK_END
+                        return Alarm.WorkEnd(
+                            alarmDateTime = workPeriod.endLocaleDateTime.toKotlinLocalDateTime()
+                        )
+                    }
+                    if (startWorkAlarmFlag) {
+                        // set alert for AlarmDataType.WORK_START
+                        return Alarm.WorkStart(
+                            alarmDateTime = nextWorkPeriod.endLocaleDateTime.plusNanos(1)
+                                .toKotlinLocalDateTime()
+                        )
+                    }
+                }
+
+                // set alert for AlarmDataType.BREAK_START
+                if (nextBreakPeriod != null) {
+                    return Alarm.BreakStart(
+                        alarmDateTime = nextBreakPeriod.startLocaleDateTime.toKotlinLocalDateTime()
+                    )
+                }
+            }
+
+            WorkPeriodType.BREAK -> {
+                if (nextWorkPeriod.type == WorkPeriodType.FREE_TIME) {
+                    if (endWorkAlarmFlag) {
+                        // set alert for AlarmDataType.WORK_END
+                        return Alarm.WorkEnd(
+                            alarmDateTime = workPeriod.endLocaleDateTime.toKotlinLocalDateTime(),
+                            duringBreak = true
+                        )
+                    }
+                }
+
+                // set alert for AlarmDataType.BREAK_END
+                return Alarm.BreakEnd(
+                    alarmDateTime = workPeriod.endLocaleDateTime.toKotlinLocalDateTime()
+                )
+            }
+
+            WorkPeriodType.FREE_TIME -> {
+                if (startWorkAlarmFlag) {
+                    // set alert for AlarmDataType.WORK_START
+                    return Alarm.WorkStart(
+                        alarmDateTime = workPeriod.endLocaleDateTime.plusNanos(1)
+                            .toKotlinLocalDateTime()
+                    )
+                }
+
+                // set alert for AlarmDataType.BREAK_START
+                if (nextBreakPeriod != null) {
+                    return Alarm.BreakStart(
+                        alarmDateTime = nextBreakPeriod.startLocaleDateTime.toKotlinLocalDateTime()
+                    )
+                }
+            }
+        }
+
+        return null
     }
 }

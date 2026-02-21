@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import kotlinx.datetime.DayOfWeek
 import pl.slaszu.workbreak.application.SetWorkDay
 import pl.slaszu.workbreak.domain.Days
-import pl.slaszu.workbreak.domain.model.WorkDay
-import pl.slaszu.workbreak.domain.model.WorkWeek
+import pl.slaszu.workbreak.domain.model.work.WorkDay
+import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
 @Composable
