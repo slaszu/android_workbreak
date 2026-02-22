@@ -10,6 +10,7 @@ import pl.slaszu.workbreak.domain.findWorkPeriod
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.schedule.ScheduleAlarmService
+import pl.slaszu.workbreak.domain.utils.tikPlus
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -26,17 +27,21 @@ class SetScheduleAlarm @Inject constructor(
         val workService = WorkService()
         val workPeriodList = workService.toWorkPeriodListWithFreeTime(workWeek, dateTime)
 
-        Log.d("myapp", "setNextScheduleAlarm workPeriodList: $workPeriodList")
-
         // check if some period is durating now
         if (workPeriodList.isEmpty()) {
             scheduleAlarmService.cancelAllAlarms()
             return null
         }
 
-        val workPeriod = workPeriodList.findWorkPeriod(dateTime)
+        // actual work period
+        var workPeriod = workPeriodList.findWorkPeriod(dateTime)
+        // or next work period in case of weeks break (two work periods with free_time type in row)
+        if (workPeriod?.type == WorkPeriodType.FREE_TIME) {
+            workPeriod = workPeriodList.findWorkPeriod(workPeriod.endLocaleDateTime.tikPlus())
+        }
+
         val nextWorkPeriod =
-            workPeriodList.findWorkPeriod(workPeriod!!.endLocaleDateTime.plusNanos(1))
+            workPeriodList.findWorkPeriod(workPeriod!!.endLocaleDateTime.tikPlus())
 
         val nextBreakPeriod = workPeriodList.findNextWorkPeriod(
             dateTime = dateTime,

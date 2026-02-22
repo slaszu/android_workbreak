@@ -109,8 +109,7 @@ class MainActivity : ComponentActivity() {
                                     onActivityChange = { workDay, active ->
                                         viewModel.setWorkDay(
                                             workWeek = workWeek,
-                                            workDay = workDay.copy(active = active),
-                                            setting = setting
+                                            workDay = workDay.copy(active = active)
                                         )
                                     },
                                     onDayClick = { day ->
@@ -127,8 +126,7 @@ class MainActivity : ComponentActivity() {
                                     onSave = { workDay ->
                                         viewModel.setWorkDay(
                                             workWeek = workWeek,
-                                            workDay = workDay,
-                                            setting = setting
+                                            workDay = workDay
                                         )
                                     }
                                 )

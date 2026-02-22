@@ -5,8 +5,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import pl.slaszu.workbreak.domain.WorkPeriod
-import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.WorkPeriodType
+import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.findWorkPeriod
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
@@ -48,12 +48,43 @@ class WorkServiceFreeTimeTest {
         @JvmStatic
         fun provide(): Stream<Arguments> {
             val workWeekInactive = WorkWeek.create()
+            val workWeekActiveWednesday = workWeekInactive.copy(
+                workDays = workWeekInactive.workDays.map {
+                    if (it.dayOfWeek == kotlinx.datetime.DayOfWeek.WEDNESDAY) {
+                        it.copy(active = true)
+                    } else {
+                        it.copy(active = false)
+                    }
+                }
+            )
             val workWeekActive = workWeekInactive.copy(
                 workDays = workWeekInactive.workDays.map {
                     it.copy(active = true)
                 }
             )
             return Stream.of(
+                Arguments.of(
+                    workWeekActiveWednesday,
+                    { thursday: LocalDateTime -> thursday },
+                    { thursday: LocalDateTime ->
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.minusDays(1).plusHours(16),
+                            endLocaleDateTime = thursday.plusDays(4).minusNanos(1),
+                            type = WorkPeriodType.FREE_TIME
+                        )
+                    },
+                ),
+                Arguments.of(
+                    workWeekActiveWednesday,
+                    { thursday: LocalDateTime -> thursday.minusDays(2) },
+                    { thursday: LocalDateTime ->
+                        WorkPeriod(
+                            startLocaleDateTime = thursday.minusDays(3),
+                            endLocaleDateTime = thursday.minusDays(1).plusHours(8).minusNanos(1),
+                            type = WorkPeriodType.FREE_TIME
+                        )
+                    },
+                ),
                 Arguments.of(
                     workWeekInactive,
                     { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },

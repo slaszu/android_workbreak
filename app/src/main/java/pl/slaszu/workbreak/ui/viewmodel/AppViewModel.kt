@@ -58,13 +58,14 @@ class AppViewModel @Inject constructor(
         this.snackbarHostState = snackbarHostState
     }
 
-    fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay, setting: Setting) {
+    fun setWorkDay(workWeek: WorkWeek, workDay: WorkDay) {
         val newWorkWeek = useCaseSetWorkDay.setWorkDay(workWeek, workDay)
         viewModelScope.launch {
             workWeekRepository.persist(
                 newWorkWeek
             )
-            Log.d("myapp", "setWorkDay: $newWorkWeek")
+
+            val setting = settingRepository.get().first()
             updateScheduleIfNeeded(newWorkWeek, setting)
         }
     }
@@ -72,6 +73,9 @@ class AppViewModel @Inject constructor(
     fun setSetting(setting: Setting) {
         viewModelScope.launch {
             settingRepository.persist(setting)
+
+            val workWeek = workWeekFlow.first()
+            updateScheduleIfNeeded(workWeek, setting)
         }
     }
 

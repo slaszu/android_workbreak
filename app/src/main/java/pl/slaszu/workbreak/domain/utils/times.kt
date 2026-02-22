@@ -11,6 +11,14 @@ fun getPrevDayOfWeek(startDay: LocalDateTime, dayOfWeek: DayOfWeek): LocalDateTi
     return resetDay(currentDay)
 }
 
+fun getNextDayOfWeek(startDay: LocalDateTime, dayOfWeek: DayOfWeek): LocalDateTime {
+    var currentDay = startDay
+    while (currentDay.dayOfWeek != dayOfWeek) {
+        currentDay = getNextDay(currentDay)
+    }
+    return resetDay(currentDay)
+}
+
 fun resetDay(day: LocalDateTime): LocalDateTime {
     return day.withHour(0).withMinute(0).withSecond(0).withNano(0)
 }
@@ -21,4 +29,12 @@ fun getPrevDay(day: LocalDateTime): LocalDateTime {
 
 fun getNextDay(day: LocalDateTime): LocalDateTime {
     return resetDay(day.plusDays(1))
+}
+
+fun LocalDateTime.tikPlus(): LocalDateTime {
+    val tik = this.plusNanos(1)
+    if (this.dayOfWeek == DayOfWeek.SUNDAY && tik.dayOfWeek == DayOfWeek.MONDAY) {
+        return tik.minusWeeks(1)
+    }
+    return tik
 }

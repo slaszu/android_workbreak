@@ -4,6 +4,7 @@ import kotlinx.datetime.toKotlinDayOfWeek
 import pl.slaszu.workbreak.domain.model.work.WorkDay
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getNextDay
+import pl.slaszu.workbreak.domain.utils.getNextDayOfWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
 import pl.slaszu.workbreak.domain.utils.resetDay
 import java.time.DayOfWeek
@@ -20,21 +21,21 @@ class WorkService {
             return emptyList()
         }
 
-        // get date for monday
-        val startDay = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
-
         val list = mutableListOf<WorkPeriod>()
 
+        val startDay = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
         val first = workPeriodList.first()
-        val last = workPeriodList.last()
-        // from last to first
-        list.add(
-            WorkPeriod(
-                startLocaleDateTime = last.endLocaleDateTime.plusNanos(1),
-                endLocaleDateTime = first.startLocaleDateTime.minusNanos(1),
-                type = WorkPeriodType.FREE_TIME
+
+        // add first period
+        if (first.startLocaleDateTime > startDay) {
+            list.add(
+                WorkPeriod(
+                    startLocaleDateTime = startDay,
+                    endLocaleDateTime = first.startLocaleDateTime.minusNanos(1),
+                    type = WorkPeriodType.FREE_TIME
+                )
             )
-        )
+        }
 
         workPeriodList.forEachIndexed { index, workPeriod ->
             list.add(workPeriod)
@@ -57,6 +58,20 @@ class WorkService {
                 )
             )
         }
+
+        val endDay = getNextDayOfWeek(dateTime, DayOfWeek.SUNDAY).plusDays(1).minusNanos(1)
+        val last = workPeriodList.last()
+        // add last period
+        if (last.endLocaleDateTime < endDay) {
+            list.add(
+                WorkPeriod(
+                    startLocaleDateTime = last.endLocaleDateTime.plusNanos(1),
+                    endLocaleDateTime = endDay,
+                    type = WorkPeriodType.FREE_TIME
+                )
+            )
+        }
+
 
         return list.toList()
     }
@@ -156,10 +171,20 @@ class WorkService {
 }
 
 fun List<WorkPeriod>.findWorkPeriod(dateTime: LocalDateTime): WorkPeriod? {
-    return this.find { it.startLocaleDateTime <= dateTime && it.endLocaleDateTime >= dateTime }
+    this.find { it.startLocaleDateTime <= dateTime && it.endLocaleDateTime >= dateTime }?.let {
+        return it
+    }
+
+    // rewind to the start of the week
+    val rewindDateTime = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
+
+    return this.find { it.startLocaleDateTime <= rewindDateTime && it.endLocaleDateTime >= rewindDateTime }
 }
 
-fun List<WorkPeriod>.findNextWorkPeriod(dateTime: LocalDateTime, type: WorkPeriodType): WorkPeriod? {
+fun List<WorkPeriod>.findNextWorkPeriod(
+    dateTime: LocalDateTime,
+    type: WorkPeriodType
+): WorkPeriod? {
 
     if (this.isEmpty()) {
         return null
