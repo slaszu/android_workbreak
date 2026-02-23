@@ -30,11 +30,3 @@ fun getPrevDay(day: LocalDateTime): LocalDateTime {
 fun getNextDay(day: LocalDateTime): LocalDateTime {
     return resetDay(day.plusDays(1))
 }
-
-fun LocalDateTime.tikPlus(): LocalDateTime {
-    val tik = this.plusNanos(1)
-    if (this.dayOfWeek == DayOfWeek.SUNDAY && tik.dayOfWeek == DayOfWeek.MONDAY) {
-        return tik.minusWeeks(1)
-    }
-    return tik
-}

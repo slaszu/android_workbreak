@@ -10,17 +10,20 @@ sealed class Alarm() {
 
     @Serializable
     @SerialName("WorkStart")
-    data class WorkStart(override val alarmDateTime: LocalDateTime) : Alarm()
+    data class WorkStart(override var alarmDateTime: LocalDateTime) : Alarm()
 
     @Serializable
     @SerialName("WorkEnd")
-    data class WorkEnd(override val alarmDateTime: LocalDateTime, val duringBreak: Boolean = false) : Alarm()
+    data class WorkEnd(
+        override var alarmDateTime: LocalDateTime,
+        val duringBreak: Boolean = false
+    ) : Alarm()
 
     @Serializable
     @SerialName("BreakStart")
-    data class BreakStart(override val alarmDateTime: LocalDateTime) : Alarm()
+    data class BreakStart(override var alarmDateTime: LocalDateTime) : Alarm()
 
     @Serializable
     @SerialName("BreakEnd")
-    data class BreakEnd(override val alarmDateTime: LocalDateTime) : Alarm()
+    data class BreakEnd(override var alarmDateTime: LocalDateTime) : Alarm()
 }

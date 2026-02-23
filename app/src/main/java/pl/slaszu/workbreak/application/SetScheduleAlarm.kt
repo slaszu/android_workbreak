@@ -1,6 +1,5 @@
 package pl.slaszu.workbreak.application
 
-import android.util.Log
 import kotlinx.datetime.toKotlinLocalDateTime
 import pl.slaszu.workbreak.domain.WorkPeriod
 import pl.slaszu.workbreak.domain.WorkPeriodType
@@ -10,7 +9,6 @@ import pl.slaszu.workbreak.domain.findWorkPeriod
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.schedule.ScheduleAlarmService
-import pl.slaszu.workbreak.domain.utils.tikPlus
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -34,14 +32,10 @@ class SetScheduleAlarm @Inject constructor(
         }
 
         // actual work period
-        var workPeriod = workPeriodList.findWorkPeriod(dateTime)
-        // or next work period in case of weeks break (two work periods with free_time type in row)
-        if (workPeriod?.type == WorkPeriodType.FREE_TIME) {
-            workPeriod = workPeriodList.findWorkPeriod(workPeriod.endLocaleDateTime.tikPlus())
-        }
+        val workPeriod = workPeriodList.findWorkPeriod(dateTime)
 
         val nextWorkPeriod =
-            workPeriodList.findWorkPeriod(workPeriod!!.endLocaleDateTime.tikPlus())
+            workPeriodList.findWorkPeriod(workPeriod!!.endLocaleDateTime.plusNanos(1))
 
         val nextBreakPeriod = workPeriodList.findNextWorkPeriod(
             dateTime = dateTime,

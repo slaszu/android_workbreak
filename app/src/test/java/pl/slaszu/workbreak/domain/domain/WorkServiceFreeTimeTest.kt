@@ -29,7 +29,7 @@ class WorkServiceFreeTimeTest {
 
         val workPeriodList = workService.toWorkPeriodListWithFreeTime(
             workWeek = workWeek,
-            dateTime = thursday
+            startDay = thursday
         )
 
         println(workPeriodList)
@@ -68,19 +68,19 @@ class WorkServiceFreeTimeTest {
                     { thursday: LocalDateTime -> thursday },
                     { thursday: LocalDateTime ->
                         WorkPeriod(
-                            startLocaleDateTime = thursday.minusDays(1).plusHours(16),
-                            endLocaleDateTime = thursday.plusDays(4).minusNanos(1),
+                            startLocaleDateTime = thursday,
+                            endLocaleDateTime = thursday.plusDays(6).plusHours(8).minusNanos(1),
                             type = WorkPeriodType.FREE_TIME
                         )
                     },
                 ),
                 Arguments.of(
                     workWeekActiveWednesday,
-                    { thursday: LocalDateTime -> thursday.minusDays(2) },
+                    { thursday: LocalDateTime -> thursday.plusDays(7) },
                     { thursday: LocalDateTime ->
                         WorkPeriod(
-                            startLocaleDateTime = thursday.minusDays(3),
-                            endLocaleDateTime = thursday.minusDays(1).plusHours(8).minusNanos(1),
+                            startLocaleDateTime = thursday.plusDays(6).plusHours(16),
+                            endLocaleDateTime = thursday.plusDays(8).minusNanos(1),
                             type = WorkPeriodType.FREE_TIME
                         )
                     },
@@ -100,7 +100,7 @@ class WorkServiceFreeTimeTest {
                     { thursday: LocalDateTime -> thursday.plusHours(7).plusMinutes(59) },
                     { thursday: LocalDateTime ->
                         WorkPeriod(
-                            startLocaleDateTime = thursday.minusDays(1).plusHours(16),
+                            startLocaleDateTime = thursday,
                             endLocaleDateTime = thursday.plusHours(8).minusNanos(1),
                             type = WorkPeriodType.FREE_TIME
                         )

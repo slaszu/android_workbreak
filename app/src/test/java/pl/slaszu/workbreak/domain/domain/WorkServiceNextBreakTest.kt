@@ -32,7 +32,7 @@ class WorkServiceNextBreakTest {
 
         val workPeriodList = workService.toWorkPeriodList(
             workWeek = workWeek,
-            dateTime = thursday
+            startDay = thursday
         )
 
         println(workPeriodList)
@@ -108,7 +108,7 @@ class WorkServiceNextBreakTest {
                     { thursday: LocalDateTime ->
                         thursday.plusDays(2).plusHours(9).plusMinutes(45)
                     },
-                    { thursday: LocalDateTime -> thursday.plusHours(8).plusMinutes(45) }
+                    { thursday: LocalDateTime -> thursday.plusDays(7).plusHours(8).plusMinutes(45) }
                 ),
                 Arguments.of(
                     WorkWeek.create(),

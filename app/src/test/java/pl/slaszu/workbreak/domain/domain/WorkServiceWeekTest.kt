@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
-import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.WorkPeriodType
+import pl.slaszu.workbreak.domain.WorkService
 import pl.slaszu.workbreak.domain.findWorkPeriod
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.utils.getPrevDayOfWeek
@@ -30,7 +30,7 @@ class WorkServiceWeekTest {
 
         val workPeriodList = workService.toWorkPeriodList(
             workWeek = workWeek,
-            dateTime = thursday
+            startDay = thursday
         )
 
         println(workPeriodList)
@@ -76,22 +76,8 @@ class WorkServiceWeekTest {
                 Arguments.of(
                     workWeekActive,
                     { thursday: LocalDateTime -> thursday.minusHours(24).plusHours(8) },
-                    WorkPeriodType.WORK,
+                    null,
                 ),
-                Arguments.of(
-                    workWeekActive,
-                    { thursday: LocalDateTime ->
-                        thursday.minusHours(24).plusHours(8).plusMinutes(44)
-                    },
-                    WorkPeriodType.WORK,
-                ),
-                Arguments.of(
-                    workWeekActive,
-                    { thursday: LocalDateTime ->
-                        thursday.minusHours(24).plusHours(8).plusMinutes(45)
-                    },
-                    WorkPeriodType.BREAK,
-                )
             )
         }
     }
