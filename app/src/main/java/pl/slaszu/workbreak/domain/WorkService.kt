@@ -77,23 +77,12 @@ class WorkService {
     fun toWorkPeriodList(workWeek: WorkWeek, startDay: LocalDateTime): List<WorkPeriod> {
         val list = mutableListOf<WorkPeriod>()
 
-        // get date for monday
-        //val startDay = getPrevDayOfWeek(dateTime, DayOfWeek.MONDAY)
-
         var currentDay = startDay
         for (i in 0..7) { // 0..7 double first day at the end
             currentDay = startDay.plusDays(i.toLong())
             val workDay = workWeek.getWorkDay(currentDay.dayOfWeek.toKotlinDayOfWeek())
             list.addAll(toWorkPeriodList(workDay, currentDay))
         }
-//        Days.entries.forEach {
-//            val workDay = workWeek.getWorkDay(it.dayOfWeek)
-//
-//            list.addAll(toWorkPeriodList(workDay, currentDay))
-//
-//            currentDay = getNextDay(currentDay)
-//        }
-
 
         return list.toList()
     }
