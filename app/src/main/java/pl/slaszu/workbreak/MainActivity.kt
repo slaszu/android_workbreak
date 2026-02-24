@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
             viewModel.registerSnackbarHostState(snackbarHostState)
 
             val workWeek =
-                viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek.create()).value
+                viewModel.workWeekFlow.collectAsStateWithLifecycle(WorkWeek.createWeekInactive()).value
 
             val setting = viewModel.setting.collectAsStateWithLifecycle(Setting()).value
 

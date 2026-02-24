@@ -48,7 +48,7 @@ class WorkServiceNextBreakTest {
     companion object {
         @JvmStatic
         fun provide(): Stream<Arguments> {
-            var workWeek = WorkWeek.create()
+            var workWeek = WorkWeek.createWeekInactive()
             val setWorkDay = SetWorkDay()
 
             // active thursday
@@ -111,7 +111,7 @@ class WorkServiceNextBreakTest {
                     { thursday: LocalDateTime -> thursday.plusDays(7).plusHours(8).plusMinutes(45) }
                 ),
                 Arguments.of(
-                    WorkWeek.create(),
+                    WorkWeek.createWeekInactive(),
                     { thursday: LocalDateTime ->
                         thursday.plusDays(2).plusHours(9).plusMinutes(45)
                     },

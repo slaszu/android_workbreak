@@ -12,7 +12,7 @@ class LocalStorageWorkWeekRepository(
     override fun get(): Flow<WorkWeek> {
         return localStorage.get().map {
             if (!it.isValid()) {
-                WorkWeek.create()
+                WorkWeek.createWeekActive()
             }
             it
         }

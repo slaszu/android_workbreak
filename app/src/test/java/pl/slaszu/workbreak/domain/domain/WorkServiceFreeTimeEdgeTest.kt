@@ -17,7 +17,7 @@ class WorkServiceFreeTimeEdgeTest {
     fun hasFreeAtBeginningAndEnd() {
 
         // arrange
-        val workWeek = WorkWeek.create()
+        val workWeek = WorkWeek.createWeekInactive()
         val workWeekOnlyThursday = workWeek.copy(
             workDays = workWeek.workDays.map {
                 if (it.dayOfWeek == THURSDAY) {
@@ -64,7 +64,7 @@ class WorkServiceFreeTimeEdgeTest {
     fun hasFreeBetweenThursdayAndFriday() {
 
         // arrange
-        val workWeek = WorkWeek.create()
+        val workWeek = WorkWeek.createWeekInactive()
         val workWeekOnlyThursday = workWeek.copy(
             workDays = workWeek.workDays.map {
                 if (it.dayOfWeek == THURSDAY || it.dayOfWeek == FRIDAY) {

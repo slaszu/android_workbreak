@@ -169,7 +169,7 @@ fun ListOfDayComposablePreview() {
                 modifier = Modifier.padding(it)
             ) {
                 ListOfDaysComposable(
-                    workWeek = WorkWeek.create().let {
+                    workWeek = WorkWeek.createWeekInactive().let {
                         val setDayActive = SetWorkDay()
                         setDayActive.setWorkDay(
                             it,

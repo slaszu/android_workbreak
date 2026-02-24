@@ -47,7 +47,7 @@ class WorkServiceFreeTimeTest {
     companion object {
         @JvmStatic
         fun provide(): Stream<Arguments> {
-            val workWeekInactive = WorkWeek.create()
+            val workWeekInactive = WorkWeek.createWeekInactive()
             val workWeekActiveWednesday = workWeekInactive.copy(
                 workDays = workWeekInactive.workDays.map {
                     if (it.dayOfWeek == kotlinx.datetime.DayOfWeek.WEDNESDAY) {

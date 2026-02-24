@@ -24,10 +24,23 @@ data class WorkWeek(
     }
 
     companion object {
-        fun create(): WorkWeek {
+        fun createWeekInactive(): WorkWeek {
             return WorkWeek(
                 workDays = List(7) {
                     WorkDay.create(Days.entries[it].dayOfWeek)
+                }
+            )
+        }
+
+        fun createWeekActive(): WorkWeek {
+            val workWeek = createWeekInactive()
+            return workWeek.copy(
+                workDays = workWeek.workDays.map {
+                    if (it.dayOfWeek in DayOfWeek.MONDAY..DayOfWeek.FRIDAY) {
+                        it.copy(active = true)
+                    } else {
+                        it
+                    }
                 }
             )
         }

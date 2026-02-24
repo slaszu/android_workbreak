@@ -1,4 +1,4 @@
-package pl.slaszu.workbreak.domain.receiver
+package pl.slaszu.workbreak.application.receiver
 
 import android.content.BroadcastReceiver
 import android.content.Context

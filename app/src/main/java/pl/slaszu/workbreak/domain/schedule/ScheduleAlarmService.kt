@@ -10,7 +10,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import kotlinx.serialization.json.Json
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
-import pl.slaszu.workbreak.domain.receiver.NotificationDisplayReceiver
+import pl.slaszu.workbreak.application.receiver.NotificationDisplayReceiver
 import pl.slaszu.workbreak.domain.utils.toEpochMillis
 
 class ScheduleAlarmService @Inject constructor(

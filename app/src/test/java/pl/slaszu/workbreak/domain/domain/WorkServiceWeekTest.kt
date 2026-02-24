@@ -46,7 +46,7 @@ class WorkServiceWeekTest {
     companion object {
         @JvmStatic
         fun provide(): Stream<Arguments> {
-            val workWeekInactive = WorkWeek.create()
+            val workWeekInactive = WorkWeek.createWeekInactive()
             val workWeekActive = workWeekInactive.copy(
                 workDays = workWeekInactive.workDays.map {
                     it.copy(active = true)

@@ -33,7 +33,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="pl.slaszu.workbreak.domain.receiver.NotificationDisplayReceiver" />
+        <receiver android:name="pl.slaszu.workbreak.application.receiver.NotificationDisplayReceiver" />
     </application>
 
 </manifest>
