@@ -8,7 +8,7 @@ env:
   playstore_name: pl.slaszu.workbreak
 
   # secrets
-  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  #SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
