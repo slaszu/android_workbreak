@@ -6,6 +6,7 @@ import kotlinx.datetime.toJavaLocalDateTime
 import pl.slaszu.workbreak.R
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Locale
 
 class AlarmPresentationFactory @Inject constructor() {
@@ -19,38 +20,89 @@ class AlarmPresentationFactory @Inject constructor() {
         val dateFormatted = alarm.alarmDateTime.toJavaLocalDateTime().format(
             DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a", Locale.US)
         )
+
+        val now = alarm.alarmDateTime.toJavaLocalDateTime()
+        val dayName = now.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+        val dayOfYear = now.dayOfYear
+
+        val index = dayOfYear % 7
+
         return when (alarm) {
-            is Alarm.BreakStart -> AlarmPresentation(
-                icon = R.drawable.baseline_timer_24,
-                header = "Break start",
-                description = "Enjoy the coffee",
-                dateFormatted = dateFormatted,
-                typeDescription = "Break start"
-            )
+            is Alarm.BreakStart -> {
+                val descriptions = listOf(
+                    "Recharging is part of the process. Rest well.",
+                    "Step away for a moment. Your brain will thank you.",
+                    "Time to stretch and hydrate. Be right back!",
+                    "Pause the engine. Fresh air is calling.",
+                    "Break time! Short rest, better focus later.",
+                    "Coffee or tea? Now is the perfect time.",
+                    "Disconnect to reconnect. Enjoy your breather."
+                )
+                AlarmPresentation(
+                    icon = R.drawable.baseline_timer_24,
+                    header = "Time for a break",
+                    description = descriptions[index],
+                    dateFormatted = dateFormatted,
+                    typeDescription = "Break start"
+                )
+            }
 
-            is Alarm.BreakEnd -> AlarmPresentation(
-                icon = R.drawable.baseline_timer_off_24,
-                header = "Break end",
-                description = "Back to work",
-                dateFormatted = dateFormatted,
-                typeDescription = "Break end"
-            )
+            is Alarm.BreakEnd -> {
+                val descriptions = listOf(
+                    "Ready to focus? Let's get back to the session.",
+                    "Break over. Let's maintain that momentum!",
+                    "Welcome back. Time to crush the next task.",
+                    "Systems back online. Let's resume work.",
+                    "Refreshed and ready? The charts are waiting.",
+                    "Focus mode: ON. Let's continue the progress.",
+                    "Back to the grind. Stay sharp!"
+                )
+                AlarmPresentation(
+                    icon = R.drawable.baseline_timer_off_24,
+                    header = "Break finished",
+                    description = descriptions[index],
+                    dateFormatted = dateFormatted,
+                    typeDescription = "Break end"
+                )
+            }
 
-            is Alarm.WorkStart -> AlarmPresentation(
-                icon = R.drawable.baseline_timer_24,
-                header = "Work start",
-                description = "It is thursday, day of \"Pizza and Tomato\". 235 day of year",
-                dateFormatted = dateFormatted,
-                typeDescription = "Work start"
-            )
+            is Alarm.WorkStart -> {
+                val descriptions = listOf(
+                    "Today is $dayName (Day $dayOfYear). Let's make it productive!",
+                    "New day, new opportunities. Strategy set, let's go.",
+                    "It's $dayName. A perfect day for consistent progress.",
+                    "Session $dayOfYear started. Stay disciplined and focused.",
+                    "Good morning! Ready to execute the plan for $dayName?",
+                    "Day $dayOfYear: All systems nominal. Let's work.",
+                    "The market of life is open. Make the most of this $dayName!"
+                )
+                AlarmPresentation(
+                    icon = R.drawable.baseline_timer_24,
+                    header = "Shift started",
+                    description = descriptions[index],
+                    dateFormatted = dateFormatted,
+                    typeDescription = "Work start"
+                )
+            }
 
-            is Alarm.WorkEnd -> AlarmPresentation(
-                icon = R.drawable.baseline_timer_off_24,
-                header = "Work end",
-                description = "See you soon, bye",
-                dateFormatted = dateFormatted,
-                typeDescription = "Work end"
-            )
+            is Alarm.WorkEnd -> {
+                val descriptions = listOf(
+                    "Great job today. All systems closed. Enjoy your free time!",
+                    "Shift complete. Logged out and ready to relax.",
+                    "The work is done. Time to recharge.",
+                    "System shutdown successful. See you soon!",
+                    "Focus session ended. Transitioning to rest mode.",
+                    "Another day, another win. Time to unplug.",
+                    "You've put in the work. Now enjoy your free time!"
+                )
+                AlarmPresentation(
+                    icon = R.drawable.baseline_timer_off_24,
+                    header = "Shift completed",
+                    description = descriptions[index],
+                    dateFormatted = dateFormatted,
+                    typeDescription = "Work end"
+                )
+            }
         }
     }
 }
