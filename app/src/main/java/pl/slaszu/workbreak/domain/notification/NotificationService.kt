@@ -2,11 +2,14 @@ package pl.slaszu.workbreak.domain.notification
 
 import android.app.Notification
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import pl.slaszu.workbreak.MainActivity
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
 import pl.slaszu.workbreak.domain.presentation.AlarmPresentationFactory
 
@@ -32,6 +35,12 @@ class NotificationService @Inject constructor(
 
         val alarmPresentation = alarmPresentationFactory.create(alarm)
 
+        // Create an explicit intent for an Activity in your app.
+        val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
         return NotificationCompat.Builder(
             applicationContext,
             notificationPermissionService.channelId()
@@ -40,6 +49,8 @@ class NotificationService @Inject constructor(
             .setContentTitle(alarmPresentation.header)
             .setContentText(alarmPresentation.description)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .build()
     }
 }
