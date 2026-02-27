@@ -26,9 +26,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import pl.slaszu.workbreak.domain.model.setting.Setting
-import pl.slaszu.workbreak.domain.repository.SettingRepository
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
+import pl.slaszu.workbreak.domain.repository.SettingRepository
 import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.DayEditRoute
 import pl.slaszu.workbreak.ui.ListRouting
@@ -114,6 +114,13 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onDayClick = { day ->
                                         navController.navigate(DayEditRoute(day))
+                                    },
+                                    onCopyDaysAction = { copyDay, days ->
+                                        viewModel.copyWorkDay(
+                                            workWeek = workWeek,
+                                            copyDay = copyDay,
+                                            daysSelected = days
+                                        )
                                     }
                                 )
                             }

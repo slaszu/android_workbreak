@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import pl.slaszu.workbreak.application.CopyWorkDay
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.application.SetWorkDay
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
@@ -26,6 +27,7 @@ class AppViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val useCaseSetWorkDay: SetWorkDay,
     private val useCaseSetScheduleAlarm: SetScheduleAlarm,
+    private val useCaseCopyWorkDay: CopyWorkDay,
     private val alarmPresentationFactory: AlarmPresentationFactory
 ) : ViewModel() {
 
@@ -76,6 +78,15 @@ class AppViewModel @Inject constructor(
 
             val workWeek = workWeekFlow.first()
             updateScheduleIfNeeded(workWeek, setting)
+        }
+    }
+
+    fun copyWorkDay(workWeek: WorkWeek, copyDay: WorkDay, daysSelected: List<WorkDay>) {
+        val newWorkWeek = useCaseCopyWorkDay.copyWorkDay(workWeek, copyDay, daysSelected)
+        viewModelScope.launch {
+            workWeekRepository.persist(
+                newWorkWeek
+            )
         }
     }
 

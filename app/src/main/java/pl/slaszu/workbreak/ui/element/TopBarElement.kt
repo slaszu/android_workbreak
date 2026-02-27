@@ -101,7 +101,7 @@ fun TopBarElement(
         },
         navigationIcon = {
             if (!isMainScreen) {
-                IconButton(onClick = { navController.popBackStack() }) {
+                IconButton(onClick = { navController.navigate(ListRouting) }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                 }
             }
