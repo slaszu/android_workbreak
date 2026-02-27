@@ -25,7 +25,7 @@ class AlarmPresentationFactory @Inject constructor() {
         val dayName = now.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
         val dayOfYear = now.dayOfYear
 
-        val index = dayOfYear % 7
+        val index = (dayOfYear + now.hour) % 7
 
         return when (alarm) {
             is Alarm.BreakStart -> {
