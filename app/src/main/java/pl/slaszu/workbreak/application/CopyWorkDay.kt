@@ -9,7 +9,7 @@ class CopyWorkDay @Inject constructor() {
         val days = workWeek.workDays.map {
             if (daysSelected.contains(it)) {
                 copyDay.copy(
-                    dayOfWeek = it.dayOfWeek
+                    dayOfWeek = it.dayOfWeek,
                 )
             } else {
                 it

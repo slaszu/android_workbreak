@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +32,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.slaszu.workbreak.BuildConfig
 import pl.slaszu.workbreak.domain.model.setting.Setting
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
@@ -105,6 +107,17 @@ fun SettingScreen(
                 onCheckedChange = { onSave(setting.copy(showWorkEndReminder = it)) }
             )
         }
+
+        // Ten Spacer zajmie całą wolną przestrzeń, spychając resztę na dół
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Tekst wersji wyrównany do prawej
+        Text(
+            text = "v${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.End) // Wyrównanie do prawej wewnątrz Column
+        )
     }
 }
 
