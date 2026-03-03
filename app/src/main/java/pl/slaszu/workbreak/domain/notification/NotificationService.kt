@@ -10,6 +10,8 @@ import androidx.core.app.NotificationCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
 import pl.slaszu.workbreak.MainActivity
+import pl.slaszu.workbreak.R
+import pl.slaszu.workbreak.application.receiver.MuteForTodayReceiver
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
 import pl.slaszu.workbreak.domain.presentation.AlarmPresentationFactory
 
@@ -39,7 +41,20 @@ class NotificationService @Inject constructor(
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val muteIntent = Intent(applicationContext, MuteForTodayReceiver::class.java)
+        val mutePendingIntent: PendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            0,
+            muteIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
 
         return NotificationCompat.Builder(
             applicationContext,
@@ -51,6 +66,7 @@ class NotificationService @Inject constructor(
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .addAction(R.drawable.cancel_24px, "MUTE FOR TODAY", mutePendingIntent)
             .build()
     }
 }

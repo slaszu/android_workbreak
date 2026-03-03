@@ -34,6 +34,7 @@
         </activity>
 
         <receiver android:name="pl.slaszu.workbreak.application.receiver.NotificationDisplayReceiver" />
+        <receiver android:name="pl.slaszu.workbreak.application.receiver.MuteForTodayReceiver" />
     </application>
 
 </manifest>
