@@ -7,6 +7,7 @@ import android.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.serialization.json.Json
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
@@ -59,9 +60,10 @@ class NotificationDisplayReceiver() : BroadcastReceiver() {
 
         val nextAlarm = useCaseSetScheduleAlarm.setNextScheduleAlarm(
             workWeek = workWeek,
-            dateTime = LocalDateTime.now(ZoneId.systemDefault()).plusSeconds(5),
+            nowTime = LocalDateTime.now(ZoneId.systemDefault()).plusSeconds(5),
             startWorkAlarmFlag = setting.showWorkStartReminder,
-            endWorkAlarmFlag = setting.showWorkEndReminder
+            endWorkAlarmFlag = setting.showWorkEndReminder,
+            muteUntil = setting.muteUntil?.toJavaLocalDateTime()
         )
         Log.d("myapp", "NotificationDisplayReceiver setNextScheduleAlarm done")
         Log.d("myapp", "NotificationDisplayReceiver nextAlarm: $nextAlarm")

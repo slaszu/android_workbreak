@@ -2,12 +2,10 @@ package pl.slaszu.workbreak.domain.presentation
 
 
 import jakarta.inject.Inject
-import kotlinx.datetime.toJavaLocalDateTime
 import pl.slaszu.workbreak.R
 import pl.slaszu.workbreak.domain.model.alarm.Alarm
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
+import pl.slaszu.workbreak.domain.utils.getDateTimeFormatted
+import pl.slaszu.workbreak.domain.utils.getDayName
 
 class AlarmPresentationFactory @Inject constructor() {
 
@@ -17,15 +15,11 @@ class AlarmPresentationFactory @Inject constructor() {
         val angielskiFormat = DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a", Locale.US)
          */
 
-        val dateFormatted = alarm.alarmDateTime.toJavaLocalDateTime().format(
-            DateTimeFormatter.ofPattern("MMMM dd, yyyy 'at' hh:mm a", Locale.US)
-        )
+        val dateFormatted = alarm.alarmDateTime.getDateTimeFormatted()
+        val dayName = alarm.alarmDateTime.getDayName()
+        val dayOfYear = alarm.alarmDateTime.dayOfYear
 
-        val now = alarm.alarmDateTime.toJavaLocalDateTime()
-        val dayName = now.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
-        val dayOfYear = now.dayOfYear
-
-        val index = (dayOfYear + now.hour) % 7
+        val index = (dayOfYear + alarm.alarmDateTime.hour) % 7
 
         return when (alarm) {
             is Alarm.BreakStart -> {

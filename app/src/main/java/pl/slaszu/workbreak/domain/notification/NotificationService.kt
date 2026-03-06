@@ -20,6 +20,19 @@ class NotificationService @Inject constructor(
     private val notificationPermissionService: NotificationPermissionService,
     private val alarmPresentationFactory: AlarmPresentationFactory
 ) {
+
+    fun displayNotification(title: String, message: String) {
+        if (!notificationPermissionService.hasPermission()) {
+            Log.d("myapp", "NotificationService has no permission")
+            return
+        }
+
+        val notificationManager: NotificationManager =
+            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        notificationManager.notify(1, getNotification(title, message))
+    }
+
     fun displayNotification(alarm: Alarm) {
 
         if (!notificationPermissionService.hasPermission()) {
@@ -33,11 +46,35 @@ class NotificationService @Inject constructor(
         notificationManager.notify(1, getNotification(alarm))
     }
 
+    private fun getNotification(title: String, message: String): Notification {
+
+        val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat.Builder(
+            applicationContext,
+            notificationPermissionService.channelId()
+        )
+            .setSmallIcon(R.drawable.cancel_24px)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+    }
+
     private fun getNotification(alarm: Alarm): Notification {
 
         val alarmPresentation = alarmPresentationFactory.create(alarm)
 
-        // Create an explicit intent for an Activity in your app.
         val intent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }

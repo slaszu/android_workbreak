@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.datetime.toJavaLocalDateTime
 import pl.slaszu.workbreak.application.CopyWorkDay
 import pl.slaszu.workbreak.application.SetScheduleAlarm
 import pl.slaszu.workbreak.application.SetWorkDay
@@ -94,9 +95,10 @@ class AppViewModel @Inject constructor(
         val now = LocalDateTime.now(ZoneId.systemDefault())
         val alarm = useCaseSetScheduleAlarm.setNextScheduleAlarm(
             workWeek = workWeek,
-            dateTime = now,
+            nowTime = now,
             startWorkAlarmFlag = setting.showWorkStartReminder,
-            endWorkAlarmFlag = setting.showWorkEndReminder
+            endWorkAlarmFlag = setting.showWorkEndReminder,
+            muteUntil = setting.muteUntil?.toJavaLocalDateTime()
         )
 
         Log.d("myapp", "updateScheduleIfNeeded alarm: $alarm")

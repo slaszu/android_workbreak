@@ -18,10 +18,20 @@ class SetScheduleAlarm @Inject constructor(
 
     fun setNextScheduleAlarm(
         workWeek: WorkWeek,
-        dateTime: LocalDateTime,
+        nowTime: LocalDateTime,
         startWorkAlarmFlag: Boolean = false,
         endWorkAlarmFlag: Boolean = false,
+        muteUntil: LocalDateTime? = null
     ): Alarm? {
+
+        var dateTime = nowTime
+
+        muteUntil?.let {
+            if (dateTime < it) {
+                dateTime = it
+            }
+        }
+
         val workService = WorkService()
         val workPeriodList = workService.toWorkPeriodListWithFreeTime(workWeek, dateTime)
 
