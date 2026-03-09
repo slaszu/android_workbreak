@@ -14,7 +14,7 @@ data class Setting(
     val muteUntil: LocalDateTime? = null
 ) {
     fun isMuteActive(nowDateTime: LocalDateTimeJava): Boolean {
-        if (muteUntil == null) return true
+        if (muteUntil == null) return false
         return muteUntil.toJavaLocalDateTime().isAfter(nowDateTime)
     }
 }

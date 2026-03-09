@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Warning
@@ -29,19 +30,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import pl.slaszu.workbreak.BuildConfig
 import pl.slaszu.workbreak.domain.model.setting.Setting
+import pl.slaszu.workbreak.domain.presentation.UserWarning
+import pl.slaszu.workbreak.domain.utils.getDateTimeFormatted
 import pl.slaszu.workbreak.ui.theme.WorkBreakTheme
 
 @Composable
 fun SettingScreen(
     setting: Setting,
+    userWarning: UserWarning?,
     onSave: (Setting) -> Unit,
-    notificationPermission: Boolean,
-    schedulePermission: Boolean,
     onOpenSettingsForNotification: () -> Unit,
     onOpenSettingForSchedule: () -> Unit
 ) {
@@ -61,31 +64,59 @@ fun SettingScreen(
             color = MaterialTheme.colorScheme.onSurface
         )
 
-        if (!notificationPermission || !schedulePermission) {
+        if (userWarning != null) {
+            val notificationPermission = userWarning.notification
+            val schedulePermission = userWarning.schedule
+            val mute = userWarning.mute
 
             SettingsSection(title = "System & Privacy") {
-                if (!notificationPermission) {
+                var doTopLine = false
+                if (notificationPermission) {
                     PermissionRow(
                         title = "Notifications",
                         description = "Required to show alerts and reminders.",
-                        isGranted = notificationPermission,
+                        isGranted = false,
                         onClick = onOpenSettingsForNotification
                     )
+                    doTopLine = true
                 }
 
-                if (!notificationPermission && !schedulePermission) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        thickness = 0.5.dp
-                    )
-                }
+                if (schedulePermission) {
+                    if (doTopLine) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            thickness = 0.5.dp
+                        )
+                    }
 
-                if (!schedulePermission) {
                     PermissionRow(
                         title = "Exact Alarms",
                         description = "Your reminders will not work without this permission. Please enable it in settings.",
-                        isGranted = schedulePermission,
+                        isGranted = false,
                         onClick = onOpenSettingForSchedule
+                    )
+                }
+
+                if (mute) {
+                    if (doTopLine) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            thickness = 0.5.dp
+                        )
+                    }
+
+                    PermissionRow(
+                        title = "Notifications muted",
+                        description = "Your reminders are muted until ${setting.muteUntil?.getDateTimeFormatted()}. Tap to unmute.",
+                        isGranted = false,
+                        onClick = {
+                            onSave(
+                                setting.copy(
+                                    muteUntil = null
+                                )
+                            )
+                        },
+                        imageVector = Icons.Default.Cancel
                     )
                 }
             }
@@ -147,7 +178,8 @@ private fun PermissionRow(
     title: String,
     description: String,
     isGranted: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    imageVector: ImageVector = Icons.Default.ChevronRight
 ) {
     Row(
         modifier = Modifier
@@ -171,7 +203,7 @@ private fun PermissionRow(
             )
         }
         Icon(
-            imageVector = Icons.Default.ChevronRight,
+            imageVector = imageVector,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.outline
         )
@@ -218,8 +250,7 @@ fun SettingScreenPreview() {
                 SettingScreen(
                     setting = Setting(),
                     onSave = {},
-                    notificationPermission = false,
-                    schedulePermission = false,
+                    userWarning = null,
                     onOpenSettingForSchedule = {},
                     onOpenSettingsForNotification = {}
                 )

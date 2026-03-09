@@ -82,8 +82,8 @@ class MuteForTodayReceiver : BroadcastReceiver() {
         val dayName = alarm.alarmDateTime.getDayName()
 
         notificationService.displayNotification(
-            title = "Notifications has been muted",
-            message = "See you on $dayName"
+            title = "Notifications muted",
+            message = "Your reminders will resume on $dayName"
         )
     }
 }

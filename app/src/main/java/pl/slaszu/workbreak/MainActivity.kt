@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         TopBarElement(
                             navController = navController,
                             scrollBehavior = scrollBehavior,
-                            showBadge = userWarningSpecification.isWarningActive(setting)
+                            showBadge = userWarningSpecification.isWarningActive(setting) != null
                         )
                     },
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // 2. Łączymy z przewijaniem
@@ -150,8 +150,7 @@ class MainActivity : ComponentActivity() {
                                     onSave = {
                                         viewModel.setSetting(it)
                                     },
-                                    notificationPermission = notificationPermissionService.hasPermission(),
-                                    schedulePermission = schedulePermissionService.hasPermission(),
+                                    userWarning = userWarningSpecification.isWarningActive(setting),
                                     onOpenSettingsForNotification = {
                                         startActivityForNotificationPermission()
                                     },

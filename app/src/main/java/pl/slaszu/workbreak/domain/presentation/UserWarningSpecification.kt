@@ -11,10 +11,24 @@ class UserWarningSpecification @Inject constructor(
     private val schedulePermissionService: SchedulePermissionService,
     private val clock: Clock
 ) {
-    fun isWarningActive(setting: Setting): Boolean {
-        return !notificationPermissionService.hasPermission()
-                || !schedulePermissionService.hasPermission()
-                || setting.isMuteActive(clock.getNow())
+    fun isWarningActive(setting: Setting): UserWarning? {
+        if (!notificationPermissionService.hasPermission()
+            || !schedulePermissionService.hasPermission()
+            || setting.isMuteActive(clock.getNow())
+        ) {
+            return UserWarning(
+                notification = !notificationPermissionService.hasPermission(),
+                schedule = !schedulePermissionService.hasPermission(),
+                mute = setting.isMuteActive(clock.getNow())
+            )
+        }
+        return null
     }
 }
+
+data class UserWarning(
+    val notification: Boolean,
+    val schedule: Boolean,
+    val mute: Boolean,
+)
 
