@@ -24,7 +24,7 @@ class MuteForToday @Inject constructor() {
             workPeriodList.findNextWorkPeriod(nowTime, WorkPeriodType.FREE_TIME)
                 ?: return null
 
-        return nextFreeTime.endLocaleDateTime
+        return nextFreeTime.endLocaleDateTime.plusNanos(1)
     }
 
 }

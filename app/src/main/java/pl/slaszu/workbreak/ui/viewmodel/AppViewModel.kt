@@ -88,6 +88,9 @@ class AppViewModel @Inject constructor(
             workWeekRepository.persist(
                 newWorkWeek
             )
+
+            val setting = settingRepository.get().first()
+            updateScheduleIfNeeded(newWorkWeek, setting)
         }
     }
 

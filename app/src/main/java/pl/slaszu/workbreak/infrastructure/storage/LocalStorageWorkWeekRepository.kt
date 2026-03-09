@@ -13,8 +13,9 @@ class LocalStorageWorkWeekRepository(
         return localStorage.get().map {
             if (!it.isValid()) {
                 WorkWeek.createWeekActive()
+            } else {
+                it
             }
-            it
         }
     }
 

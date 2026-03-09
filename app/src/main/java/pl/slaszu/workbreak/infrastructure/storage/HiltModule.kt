@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import pl.slaszu.localstorage.createLocalStorage
+import pl.slaszu.workbreak.domain.Clock
 import pl.slaszu.workbreak.domain.model.setting.Setting
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.repository.SettingRepository
@@ -34,12 +35,14 @@ object Providers {
     @Singleton
     fun getSettingRepository(
         @ApplicationContext context: Context,
+        clock: Clock
     ): SettingRepository {
         return LocalStorageSettingRepository(
             localStorage = context.createLocalStorage(
                 default = Setting(),
                 filename = "setting"
-            )
+            ),
+            clock = clock
         )
     }
 }

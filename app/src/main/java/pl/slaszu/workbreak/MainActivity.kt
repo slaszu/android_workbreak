@@ -28,6 +28,7 @@ import kotlinx.coroutines.runBlocking
 import pl.slaszu.workbreak.domain.model.setting.Setting
 import pl.slaszu.workbreak.domain.model.work.WorkWeek
 import pl.slaszu.workbreak.domain.notification.NotificationPermissionService
+import pl.slaszu.workbreak.domain.presentation.UserWarningSpecification
 import pl.slaszu.workbreak.domain.repository.SettingRepository
 import pl.slaszu.workbreak.domain.schedule.SchedulePermissionService
 import pl.slaszu.workbreak.ui.DayEditRoute
@@ -52,6 +53,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var settingRepository: SettingRepository
+
+    @Inject
+    lateinit var userWarningSpecification: UserWarningSpecification
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,7 +92,7 @@ class MainActivity : ComponentActivity() {
                         TopBarElement(
                             navController = navController,
                             scrollBehavior = scrollBehavior,
-                            showBadge = !notificationPermissionService.hasPermission() || !schedulePermissionService.hasPermission()
+                            showBadge = userWarningSpecification.isWarningActive(setting)
                         )
                     },
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // 2. Łączymy z przewijaniem
