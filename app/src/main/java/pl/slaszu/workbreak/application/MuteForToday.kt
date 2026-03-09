@@ -17,7 +17,7 @@ class MuteForToday @Inject constructor() {
             ?: return null
 
         if (actualWorkPeriod.type == WorkPeriodType.FREE_TIME) {
-            return actualWorkPeriod.endLocaleDateTime
+            return actualWorkPeriod.endLocaleDateTime.plusNanos(1)
         }
 
         val nextFreeTime =

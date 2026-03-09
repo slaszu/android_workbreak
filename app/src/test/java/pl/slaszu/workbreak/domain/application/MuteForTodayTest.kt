@@ -53,19 +53,19 @@ class MuteForTodayTest {
             return Stream.of(
                 Arguments.of(
                     { thursday: LocalDateTime -> thursday },
-                    { thursday: LocalDateTime -> thursday.plusHours(8).minusNanos(1) }
+                    { thursday: LocalDateTime -> thursday.plusHours(8) }
                 ),
                 Arguments.of(
                     { thursday: LocalDateTime -> thursday.plusHours(7) },
-                    { thursday: LocalDateTime -> thursday.plusHours(8).minusNanos(1) }
+                    { thursday: LocalDateTime -> thursday.plusHours(8) }
                 ),
                 Arguments.of(
                     { thursday: LocalDateTime -> thursday.plusHours(8) },
-                    { thursday: LocalDateTime -> thursday.plusDays(1).plusHours(8).minusNanos(1) }
+                    { thursday: LocalDateTime -> thursday.plusDays(1).plusHours(8) }
                 ),
                 Arguments.of(
                     { thursday: LocalDateTime -> thursday.plusDays(1).plusHours(8) },
-                    { thursday: LocalDateTime -> thursday.plusDays(4).plusHours(8).minusNanos(1) }
+                    { thursday: LocalDateTime -> thursday.plusDays(4).plusHours(8) }
                 )
             )
         }
