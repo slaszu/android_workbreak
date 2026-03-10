@@ -28,7 +28,7 @@ class SetScheduleAlarm @Inject constructor(
 
         muteUntil?.let {
             if (dateTime < it) {
-                dateTime = it
+                dateTime = it.minusNanos(1)
             }
         }
 
